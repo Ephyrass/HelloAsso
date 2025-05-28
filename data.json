@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "title": "Marathon de Paris",
+    "coords": { "lat": 48.8566, "lng": 2.3522 },
+    "description": "Course mythique à travers les rues de la capitale. Des milliers de coureurs attendus.",
+    "category": "sport"
+  },
+  {
+    "id": 2,
+    "title": "Festival Jazz à Vienne",
+    "coords": { "lat": 45.516, "lng": 4.8757 },
+    "description": "Grand festival de jazz dans un théâtre antique. Ambiance estivale garantie.",
+    "category": "spectacles"
+  },
+  {
+    "id": 3,
+    "title": "Fête de la Mer à Boulogne-sur-Mer",
+    "coords": { "lat": 50.7264, "lng": 1.6147 },
+    "description": "Célébration maritime avec animations et défilés de bateaux.",
+    "category": "spectacles"
+  },
+  {
+    "id": 4,
+    "title": "Atelier poterie à Limoges",
+    "coords": { "lat": 45.8315, "lng": 1.2578 },
+    "description": "Initiation à la céramique dans la capitale de la porcelaine.",
+    "category": "ateliers"
+  },
+  {
+    "id": 5,
+    "title": "Trail du Mont Blanc",
+    "coords": { "lat": 45.9237, "lng": 6.8694 },
+    "description": "Course en montagne avec vues spectaculaires sur les Alpes.",
+    "category": "sport"
+  },
+  {
+    "id": 6,
+    "title": "Concert électro à Lille",
+    "coords": { "lat": 50.6292, "lng": 3.0573 },
+    "description": "Une nuit de musique électronique avec DJ internationaux.",
+    "category": "concerts"
+  },
+  {
+    "id": 7,
+    "title": "Festival du Livre à Bordeaux",
+    "coords": { "lat": 44.8378, "lng": -0.5792 },
+    "description": "Rencontres littéraires et dédicaces au cœur de la ville.",
+    "category": "spectacles"
+  },
+  {
+    "id": 8,
+    "title": "Atelier photo en Camargue",
+    "coords": { "lat": 43.5297, "lng": 4.2043 },
+    "description": "Photographiez flamants roses et chevaux sauvages.",
+    "category": "ateliers"
+  },
+  {
+    "id": 9,
+    "title": "Match de rugby à Toulouse",
+    "coords": { "lat": 43.6045, "lng": 1.4442 },
+    "description": "Affrontement de haut niveau dans la capitale du rugby.",
+    "category": "sport"
+  },
+  {
+    "id": 10,
+    "title": "Festival de théâtre à Avignon",
+    "coords": { "lat": 43.9493, "lng": 4.8055 },
+    "description": "Spectacles dans toute la ville, entre ruelles et palais.",
+    "category": "spectacles"
+  },
+  {
+    "id": 11,
+    "title": "Concert symphonique à Strasbourg",
+    "coords": { "lat": 48.5734, "lng": 7.7521 },
+    "description": "Grande soirée classique avec orchestre international.",
+    "category": "concerts"
+  },
+  {
+    "id": 12,
+    "title": "Initiation au surf à Biarritz",
+    "coords": { "lat": 43.4832, "lng": -1.5586 },
+    "description": "Apprenez à dompter les vagues de l'Atlantique.",
+    "category": "sport"
+  },
+  {
+    "id": 13,
+    "title": "Atelier cuisine niçoise",
+    "coords": { "lat": 43.7102, "lng": 7.262 },
+    "description": "Réalisez des spécialités du sud avec un chef local.",
+    "category": "ateliers"
+  },
+  {
+    "id": 14,
+    "title": "Concert pop à Rennes",
+    "coords": { "lat": 48.1173, "lng": -1.6778 },
+    "description": "Un groupe montant de la scène pop française en concert.",
+    "category": "concerts"
+  },
+  {
+    "id": 15,
+    "title": "Salon de la BD à Angoulême",
+    "coords": { "lat": 45.6484, "lng": 0.1563 },
+    "description": "Rendez-vous des passionnés de bande dessinée.",
+    "category": "spectacles"
+  }
+]
