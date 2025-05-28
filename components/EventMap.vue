@@ -162,15 +162,26 @@ watch(() => props.selectedEvent, async () => {
       marker.setIcon(createHighlightedIcon(L));
       selectedMarker = marker;
       marker.setZIndexOffset(1000);
+
+      // Ouvrir la popup du marqueur sélectionné
+      marker.openPopup();
+
+      // Centrer la carte sur le marqueur sélectionné avec une animation fluide
+      if (props.selectedEvent?.coords) {
+        map.setView(
+          [props.selectedEvent.coords.lat, props.selectedEvent.coords.lng],
+          12, // Zoom level
+          { animate: true }
+        );
+      }
     } else {
       marker.setIcon(new L.Icon.Default());
       marker.setZIndexOffset(0);
       marker.closePopup();
     }
   });
-
-
 }, { immediate: true });
+
 // Nettoyer la carte lors du démontage du composant
 onUnmounted(() => {
   if (map) {

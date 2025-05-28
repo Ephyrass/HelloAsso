@@ -53,7 +53,8 @@ export const useEventStore = defineStore('event', () => {
   // Surveiller les événements pour appliquer les filtres initiaux après chargement
   watch(() => events.value, (newEvents) => {
     if (newEvents.length > 0 && initialQueryParams.value.eventId) {
-      const event = newEvents.find(e => e.id === initialQueryParams.value.eventId);
+      const eventId = String(initialQueryParams.value.eventId);
+      const event = newEvents.find(e => String(e.id) === eventId);
       if (event) selectedEvent.value = event;
       // Réinitialiser pour ne pas rappliquer à chaque changement d'événements
       initialQueryParams.value = {};
@@ -89,7 +90,8 @@ export const useEventStore = defineStore('event', () => {
 
       // Restaurer l'événement sélectionné depuis l'URL si nécessaire
       if (route.query.eventId) {
-        const event = events.value.find(e => e.id === route.query.eventId);
+        const eventId = String(route.query.eventId);
+        const event = events.value.find(e => String(e.id) === eventId);
         if (event) selectedEvent.value = event;
       }
     } catch (error) {
