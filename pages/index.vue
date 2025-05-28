@@ -58,7 +58,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 25px auto;
 }
 
 .page-header {

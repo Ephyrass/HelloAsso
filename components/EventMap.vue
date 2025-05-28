@@ -12,6 +12,7 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import type { Event } from '~/types/Event';
 import type {Marker} from "leaflet";
 
+
 const props = defineProps<{
   events: Event[];
   loading: boolean;
@@ -29,19 +30,18 @@ const debugInfo = ref('');
 
 onMounted(async () => {
   try {
-    // S'assurer que le code s'exécute côté client
+    // Ensure code runs on client-side
     if (process.client) {
-      // Import explicite de la feuille de style
+      // Explicit import of stylesheet
       await import('leaflet/dist/leaflet.css');
 
-      // Importer Leaflet
       const L = await import('leaflet').then(m => m.default);
 
-      debugInfo.value = `Leaflet chargé. Conteneur: ${mapContainer.value ? 'OK' : 'Manquant'}`;
+      debugInfo.value = `Leaflet loaded. Container: ${mapContainer.value ? 'OK' : 'Missing'}`;
 
       leafletIcons(L);
 
-      // Initialiser la carte
+      // Initialize map
       if (mapContainer.value) {
         map = L.map(mapContainer.value).setView([48.8566, 2.3522], 6);
 
@@ -49,19 +49,19 @@ onMounted(async () => {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Vérifier si des événements sont disponibles avec des coordonnées
+        // Check if events with coordinates are available
         const eventsWithCoords = props.events.filter(e =>
           e.coords && true && true);
 
-        debugInfo.value = `Événements avec coordonnées: ${eventsWithCoords.length}/${props.events.length}`;
+        debugInfo.value = `Events with coordinates: ${eventsWithCoords.length}/${props.events.length}`;
 
-        // Ajouter les marqueurs pour les événements
+        // Add markers for events
         addEventMarkers(L);
       }
     }
   } catch (error) {
-    console.error('Erreur lors de l\'initialisation de la carte:', error);
-    debugInfo.value = `Erreur: ${error instanceof Error ? error.message : String(error)}`;
+    console.error('Error initializing map:', error);
+    debugInfo.value = `Error: ${error instanceof Error ? error.message : String(error)}`;
   }
 });
 
@@ -75,11 +75,10 @@ function leafletIcons(L: any) {
   });
 }
 
-// Ajouter des marqueurs pour chaque événement
 function addEventMarkers(L: any) {
   if (!map) return;
 
-  // Supprimer les marqueurs existants
+  // Remove existing markers
   Object.values(markers).forEach((marker: any) => {
     map.removeLayer(marker);
   });
@@ -89,7 +88,7 @@ function addEventMarkers(L: any) {
   let markerCount = 0;
 
   props.events.forEach((event) => {
-    // Vérification plus stricte des coordonnées
+    // Stricter coordinate validation
     if (event.coords && !isNaN(event.coords.lat) && !isNaN(event.coords.lng)) {
 
       const isSelected = props.selectedEvent && props.selectedEvent.id === event.id;
@@ -107,9 +106,9 @@ function addEventMarkers(L: any) {
         emit('select', event);
       });
 
-      // Ouvrir immédiatement la popup si cet événement est sélectionné
+      // Immediately open popup if this event is selected
       if (isSelected) {
-        // Utiliser setTimeout pour s'assurer que la popup s'ouvre après que le marqueur soit complètement initialisé
+        // Use setTimeout to ensure the popup opens after the marker is fully initialized
         setTimeout(() => {
           marker.openPopup();
         }, 100);
@@ -121,15 +120,15 @@ function addEventMarkers(L: any) {
     }
   });
 
-  debugInfo.value = `Marqueurs ajoutés: ${markerCount}`;
+  debugInfo.value = `Markers added: ${markerCount}`;
 
-  // Remplacer isEmpty() par une vérification du nombre de marqueurs
+  // Replace isEmpty() with a check for marker count
   if (markerCount > 0) {
     map.fitBounds(bounds, { padding: [50, 50] });
   }
 }
 
-// Créer une icône mise en évidence pour le marqueur sélectionné
+// Create a highlighted icon for the selected marker
 function createHighlightedIcon(L: any) {
   return new L.Icon({
     iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png',
@@ -163,10 +162,10 @@ watch(() => props.selectedEvent, async () => {
       selectedMarker = marker;
       marker.setZIndexOffset(1000);
 
-      // Ouvrir la popup du marqueur sélectionné
+      // Open the selected marker's popup
       marker.openPopup();
 
-      // Centrer la carte sur le marqueur sélectionné avec une animation fluide
+      // Center the map on the selected marker with smooth animation
       if (props.selectedEvent?.coords) {
         map.setView(
           [props.selectedEvent.coords.lat, props.selectedEvent.coords.lng],
@@ -182,7 +181,7 @@ watch(() => props.selectedEvent, async () => {
   });
 }, { immediate: true });
 
-// Nettoyer la carte lors du démontage du composant
+// Clean up the map when component is unmounted
 onUnmounted(() => {
   if (map) {
     map.remove();
@@ -220,4 +219,3 @@ onUnmounted(() => {
 
 
 </style>
-

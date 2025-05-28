@@ -21,7 +21,7 @@ const mockEvents = [
 ];
 
 describe('EventList', () => {
-  it('affiche le message de chargement quand loading est true', () => {
+  it('displays loading message when loading is true', () => {
     const wrapper = mount(EventList, {
       props: {
         events: [],
@@ -34,7 +34,7 @@ describe('EventList', () => {
     expect(wrapper.find('.loading').text()).toContain('Chargement des événements');
   });
 
-  it('affiche le message "Aucun événement trouvé" quand la liste est vide', () => {
+  it('displays "No events found" message when list is empty', () => {
     const wrapper = mount(EventList, {
       props: {
         events: [],
@@ -47,7 +47,7 @@ describe('EventList', () => {
     expect(wrapper.find('.no-events').text()).toContain('Aucun événement trouvé');
   });
 
-  it('affiche correctement la liste des événements', () => {
+  it('correctly displays the list of events', () => {
     const wrapper = mount(EventList, {
       props: {
         events: mockEvents,
@@ -64,7 +64,7 @@ describe('EventList', () => {
     expect(eventItems[1].text()).toContain('concerts');
   });
 
-  it('applique la classe selected à l\'événement sélectionné', () => {
+  it('applies selected class to the selected event', () => {
     const wrapper = mount(EventList, {
       props: {
         events: mockEvents,
@@ -78,7 +78,7 @@ describe('EventList', () => {
     expect(eventItems[1].classes()).not.toContain('selected');
   });
 
-  it('émet l\'événement select lors du clic sur un événement', async () => {
+  it('emits select event when clicking on an event', async () => {
     const wrapper = mount(EventList, {
       props: {
         events: mockEvents,
@@ -94,8 +94,8 @@ describe('EventList', () => {
     expect(wrapper.emitted('select')![0][0]).toEqual(mockEvents[1]);
   });
 
-  it('fait défiler vers l\'événement sélectionné', async () => {
-    // Mock de scrollIntoView
+  it('scrolls to the selected event', async () => {
+    // Mock scrollIntoView
     const scrollIntoViewMock = vi.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
@@ -113,7 +113,7 @@ describe('EventList', () => {
     expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' });
   });
 
-  it('ne déclenche pas de défilement quand selectedEvent est null', async () => {
+  it('does not trigger scrolling when selectedEvent is null', async () => {
     const scrollIntoViewMock = vi.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
@@ -130,4 +130,3 @@ describe('EventList', () => {
     expect(scrollIntoViewMock).not.toHaveBeenCalled();
   });
 });
-

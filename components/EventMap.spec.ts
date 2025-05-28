@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import EventMap from './EventMap.vue';
 
-// Mock de Leaflet plus complet
+// (Leaflet) mock
 const mockSetIcon = vi.fn();
 const mockOpenPopup = vi.fn();
 const mockClosePopup = vi.fn();
@@ -14,7 +14,7 @@ const mockBindPopup = vi.fn().mockReturnThis();
 const mockOn = vi.fn().mockReturnThis();
 const mockRemoveLayer = vi.fn();
 
-// Mock de Leaflet simplifié
+// Simplified Leaflet mock
 vi.mock('leaflet', () => {
   return {
     default: {
@@ -50,13 +50,13 @@ vi.mock('leaflet', () => {
   };
 });
 
-// Mock de setTimeout
+// Mock setTimeout
 vi.stubGlobal('setTimeout', (callback: Function, _: number) => {
   callback();
   return 0;
 });
 
-// Mock de l'import CSS
+// Mock CSS import
 vi.mock('leaflet/dist/leaflet.css', () => ({}));
 
 const mockEvents = [
@@ -80,11 +80,11 @@ describe('EventMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Mock global process.client pour simuler l'environnement client
+    // Mock global process.client to simulate client environment
     vi.stubGlobal('process', { client: true });
   });
 
-  it('affiche le texte de chargement lorsque loading est true', () => {
+  it('displays loading text when loading is true', () => {
     const wrapper = mount(EventMap, {
       props: {
         events: [],
@@ -97,7 +97,7 @@ describe('EventMap', () => {
     expect(wrapper.find('.loading-overlay').text()).toContain('Chargement de la carte');
   });
 
-  it('initialise la carte lorsque le composant est monté', async () => {
+  it('initializes the map when component is mounted', async () => {
     const wrapper = mount(EventMap, {
       props: {
         events: mockEvents,
@@ -110,7 +110,7 @@ describe('EventMap', () => {
     expect(wrapper.find('#map').exists()).toBe(true);
   });
 
-  it('ajoute un marqueur pour chaque événement avec des coordonnées valides', async () => {
+  it('adds a marker for each event with valid coordinates', async () => {
     const wrapper = mount(EventMap, {
       props: {
         events: mockEvents,
@@ -121,7 +121,7 @@ describe('EventMap', () => {
 
     await flushPromises();
 
-    // Vérifie que marker a été appelé pour chaque événement
+    // Verify marker was called for each event
     const leafletModule = await import('leaflet');
     expect(leafletModule.default.marker).toHaveBeenCalledTimes(mockEvents.length);
     expect(mockAddTo).toHaveBeenCalledTimes(mockEvents.length);
@@ -129,7 +129,7 @@ describe('EventMap', () => {
   });
 
 
-  it('émet l\'événement select lors du clic sur un marqueur', async () => {
+  it('emits select event when marker is clicked', async () => {
     const wrapper = mount(EventMap, {
       props: {
         events: mockEvents,
@@ -140,7 +140,7 @@ describe('EventMap', () => {
 
     await flushPromises();
 
-    // Simuler le clic sur le marqueur en appelant directement le gestionnaire d'événement
+    // Simulate marker click by directly calling the event handler
     const clickHandler = mockOn.mock.calls.find(call => call[0] === 'click')?.[1];
     if (clickHandler) {
       clickHandler();
@@ -149,7 +149,7 @@ describe('EventMap', () => {
     expect(wrapper.emitted('select')).toBeTruthy();
   });
 
-  it('met à jour les marqueurs lorsque les événements changent', async () => {
+  it('updates markers when events change', async () => {
     const wrapper = mount(EventMap, {
       props: {
         events: [],
@@ -160,19 +160,18 @@ describe('EventMap', () => {
 
     await flushPromises();
 
-    // Réinitialiser les compteurs des mocks
+    // Reset mock counters
     vi.clearAllMocks();
 
-    // Mettre à jour la prop events
+    // Update events prop
     await wrapper.setProps({ events: mockEvents });
 
-    // Attendre que la watch s'exécute
+    // Wait for the watch to execute
     await flushPromises();
 
-    // Vérifie que marker a été appelé pour chaque nouvel événement
+    // Verify marker was called for each new event
     const leafletModule = await import('leaflet');
     expect(leafletModule.default.marker).toHaveBeenCalledTimes(mockEvents.length);
   });
 
 });
-

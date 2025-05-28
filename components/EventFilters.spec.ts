@@ -6,7 +6,7 @@ import EventFilters from './EventFilters.vue';
 describe('EventFilters', () => {
   const categories = ['sport', 'spectacles', 'concerts', 'ateliers'];
 
-  it('affiche correctement les éléments d\'interface', () => {
+  it('correctly displays interface elements', () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -22,7 +22,7 @@ describe('EventFilters', () => {
     expect(wrapper.findAll('.filter-title')[1].text()).toContain('Catégories');
   });
 
-  it('initialise les valeurs avec les props', () => {
+  it('initializes values with props', () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: 'Paris',
@@ -40,7 +40,7 @@ describe('EventFilters', () => {
     expect(selectedChips[1].text()).toContain('Concerts');
   });
 
-  it('émet l\'événement update:search lors de la modification de l\'input', async () => {
+  it('emits update:search event when input is modified', async () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -56,7 +56,7 @@ describe('EventFilters', () => {
     expect(wrapper.emitted('update:search')![0]).toEqual(['Concert']);
   });
 
-  it('émet l\'événement update:selectedCategories lors du clic sur une catégorie', async () => {
+  it('emits update:selectedCategories event when clicking on a category', async () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -66,13 +66,13 @@ describe('EventFilters', () => {
     });
 
     const categoryChips = wrapper.findAll('.category-chip');
-    await categoryChips[1].trigger('click'); // Clic sur "spectacles"
+    await categoryChips[1].trigger('click'); // Click on "spectacles"
 
     expect(wrapper.emitted('update:selectedCategories')).toBeTruthy();
     expect(wrapper.emitted('update:selectedCategories')![0][0]).toEqual(['spectacles']);
   });
 
-  it('ajoute et retire des catégories de la sélection', async () => {
+  it('adds and removes categories from selection', async () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -81,17 +81,17 @@ describe('EventFilters', () => {
       }
     });
 
-    // Vérifier qu'une catégorie est déjà sélectionnée
+    // Verify a category is already selected
     let selectedChips = wrapper.findAll('.category-chip.selected');
     expect(selectedChips.length).toBe(1);
     expect(selectedChips[0].text()).toContain('Sport');
 
-    // Cliquer pour ajouter une nouvelle catégorie
+    // Click to add a new category
     const categoryChips = wrapper.findAll('.category-chip');
-    const concertsChip = categoryChips[2]; // "concerts" est à l'index 2
+    const concertsChip = categoryChips[2]; // "concerts" is at index 2
     await concertsChip.trigger('click');
 
-    // Vérifier que l'événement est émis avec les bonnes valeurs
+    // Verify the event is emitted with correct values
     expect(wrapper.emitted('update:selectedCategories')).toBeTruthy();
     expect(wrapper.emitted('update:selectedCategories')![0][0]).toEqual(['sport', 'concerts']);
 
@@ -101,7 +101,7 @@ describe('EventFilters', () => {
     expect(wrapper.emitted('update:selectedCategories')![1][0]).toEqual(['concerts']);
   });
 
-  it('réinitialise la recherche lors du clic sur le bouton clear', async () => {
+  it('resets search when clicking the clear button', async () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: 'Paris',
@@ -123,7 +123,7 @@ describe('EventFilters', () => {
     expect(wrapper.find('.clear-btn').exists()).toBe(false);
   });
 
-  it('capitalise correctement la première lettre des catégories', () => {
+  it('correctly capitalizes the first letter of categories', () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -139,7 +139,7 @@ describe('EventFilters', () => {
     });
   });
 
-  it('met à jour la sélection lorsque les props selectedCategories changent', async () => {
+  it('updates selection when selectedCategories props change', async () => {
     const wrapper = mount(EventFilters, {
       props: {
         search: '',
@@ -148,17 +148,16 @@ describe('EventFilters', () => {
       }
     });
 
-    // Initialement, aucune catégorie n'est sélectionnée
+    // Initially, no category is selected
     expect(wrapper.findAll('.category-chip.selected').length).toBe(0);
 
-    // Mettre à jour la prop selectedCategories
+    // Update the selectedCategories prop
     await wrapper.setProps({ selectedCategories: ['sport', 'ateliers'] });
 
-    // Vérifier que les bonnes catégories sont maintenant sélectionnées
+    // Verify the right categories are now selected
     const selectedChips = wrapper.findAll('.category-chip.selected');
     expect(selectedChips.length).toBe(2);
     expect(selectedChips[0].text()).toContain('Sport');
     expect(selectedChips[1].text()).toContain('Ateliers');
   });
 });
-

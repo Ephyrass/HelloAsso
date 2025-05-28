@@ -15,15 +15,20 @@ export const useEventStore = defineStore('event', () => {
   const route = useRoute();
   const router = useRouter();
 
-  // Sauvegarder les paramètres initiaux de l'URL
+  // Save initial URL parameters
   function saveInitialQueryParams() {
     initialQueryParams.value = { ...route.query };
   }
 
-  // Initialiser les filtres depuis l'URL au chargement
+  // Initialize filters from URL on load
   watch(() => route.query, (query) => {
+    if (query.search) {
+      searchQuery.value = query.search as string;
+    } else {
+      searchQuery.value = '';
+    }
 
-    // Gestion des catégories comme tableau
+    // Handle categories as array
     if (query.categories) {
       if (Array.isArray(query.categories)) {
         selectedCategories.value = query.categories as string[];
@@ -34,12 +39,12 @@ export const useEventStore = defineStore('event', () => {
       selectedCategories.value = [];
     }
 
-    // La sélection d'événement sera traitée après le chargement des données
+    // Event selection will be processed after data loading
   }, { immediate: true });
 
-  // Mettre à jour l'URL quand les filtres changent, mais seulement après le chargement initial
+  // Update URL when filters change, but only after initial loading
   watch([searchQuery, selectedCategories, selectedEvent], () => {
-    // Ne pas mettre à jour l'URL pendant le chargement
+    // Don't update URL during loading
     if (loading.value) return;
 
     const query: Record<string, string | string[]> = {};
@@ -50,13 +55,13 @@ export const useEventStore = defineStore('event', () => {
     router.replace({ query });
   }, { deep: true });
 
-  // Surveiller les événements pour appliquer les filtres initiaux après chargement
+  // Watch events to apply initial filters after loading
   watch(() => events.value, (newEvents) => {
     if (newEvents.length > 0 && initialQueryParams.value.eventId) {
       const eventId = String(initialQueryParams.value.eventId);
       const event = newEvents.find(e => String(e.id) === eventId);
       if (event) selectedEvent.value = event;
-      // Réinitialiser pour ne pas rappliquer à chaque changement d'événements
+      // Reset to avoid reapplying on every event change
       initialQueryParams.value = {};
     }
   }, { deep: true });
@@ -66,7 +71,7 @@ export const useEventStore = defineStore('event', () => {
       const matchesSearch = !searchQuery.value ||
           event.title.toLowerCase().includes(searchQuery.value.toLowerCase());
 
-      // Vérifier si aucune catégorie n'est sélectionnée ou si l'événement appartient à l'une des catégories sélectionnées
+      // Check if no category is selected or if the event belongs to one of the selected categories
       const matchesCategory = selectedCategories.value.length === 0 ||
           selectedCategories.value.includes(event.category);
 
@@ -76,26 +81,26 @@ export const useEventStore = defineStore('event', () => {
 
   async function fetchEvents() {
     loading.value = true;
-    // Sauvegarder les paramètres d'URL au début du chargement
+    // Save URL parameters at the beginning of loading
     saveInitialQueryParams();
 
     try {
       const response = await fetch('/api/events');
       events.value = await response.json();
 
-      // Extraire les catégories uniques
+      // Extract unique categories
       const uniqueCategories = new Set<string>();
       events.value.forEach(event => uniqueCategories.add(event.category));
       categories.value = Array.from(uniqueCategories);
 
-      // Restaurer l'événement sélectionné depuis l'URL si nécessaire
+      // Restore selected event from URL if needed
       if (route.query.eventId) {
         const eventId = String(route.query.eventId);
         const event = events.value.find(e => String(e.id) === eventId);
         if (event) selectedEvent.value = event;
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération des événements:', error);
+      console.error('Error fetching events:', error);
     } finally {
       loading.value = false;
     }

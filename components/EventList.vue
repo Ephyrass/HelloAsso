@@ -41,7 +41,7 @@ function isSelected(event: Event): boolean {
   return !!props.selectedEvent && props.selectedEvent.id === event.id;
 }
 
-// Faire défiler vers l'élément sélectionné
+// Scroll to selected item
 watch(() => props.selectedEvent, async () => {
   if (props.selectedEvent) {
     await nextTick();

@@ -58,21 +58,21 @@ const emit = defineEmits<{
 const searchInput = ref(props.search || '');
 const selectedCategoriesInput = ref<string[]>([...props.selectedCategories] || []);
 
-// Initialiser au montage
+// Initialize on mount
 onMounted(() => {
   if (props.selectedCategories) {
     selectedCategoriesInput.value = [...props.selectedCategories];
   }
 });
 
-// Synchroniser les valeurs d'entrée avec les props
+// Synchronize input values with props
 watch(() => props.search, (newValue) => {
   searchInput.value = newValue || '';
 });
 
 watch(() => props.selectedCategories, (newValue) => {
   if (newValue) {
-    // Créer une nouvelle référence pour forcer la réactivité
+    // Create a new reference to force reactivity
     selectedCategoriesInput.value = [...newValue];
   } else {
     selectedCategoriesInput.value = [];
@@ -220,4 +220,3 @@ function capitalizeFirstLetter(string: string) {
   }
 }
 </style>
-
