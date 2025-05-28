@@ -11,8 +11,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     expect(wrapper.find('input[type="text"]').exists()).toBe(true);
@@ -27,8 +27,8 @@ describe('EventFilters', () => {
       props: {
         search: 'Paris',
         categories,
-        selectedCategories: ['sport', 'concerts']
-      }
+        selectedCategories: ['sport', 'concerts'],
+      },
     });
 
     const input: any = wrapper.find('input[type="text"]');
@@ -45,8 +45,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     const input = wrapper.find('input[type="text"]');
@@ -61,8 +61,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     const categoryChips = wrapper.findAll('.category-chip');
@@ -77,8 +77,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: ['sport']
-      }
+        selectedCategories: ['sport'],
+      },
     });
 
     // Verify a category is already selected
@@ -106,8 +106,8 @@ describe('EventFilters', () => {
       props: {
         search: 'Paris',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     expect(wrapper.find('.clear-btn').exists()).toBe(true);
@@ -116,8 +116,7 @@ describe('EventFilters', () => {
 
     expect(wrapper.emitted('update:search')).toBeTruthy();
     expect(wrapper.emitted('update:search')![0]).toEqual(['']);
-
-    expect(wrapper.find('input[type="text"]').element.value).toBe('');
+    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('');
 
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.clear-btn').exists()).toBe(false);
@@ -128,8 +127,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     const categoryChips = wrapper.findAll('.category-chip');
@@ -144,8 +143,8 @@ describe('EventFilters', () => {
       props: {
         search: '',
         categories,
-        selectedCategories: []
-      }
+        selectedCategories: [],
+      },
     });
 
     // Initially, no category is selected

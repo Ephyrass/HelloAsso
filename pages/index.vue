@@ -19,11 +19,11 @@
       <div class="events-right-container">
         <div class="events-search-container">
           <EventFilters
-              :search="eventStore.searchQuery"
-              :categories="eventStore.categories"
-              :selectedCategories="eventStore.selectedCategories"
-              @update:search="eventStore.searchQuery = $event"
-              @update:selectedCategories="eventStore.selectedCategories = $event"
+            :search="eventStore.searchQuery"
+            :categories="eventStore.categories"
+            :selectedCategories="eventStore.selectedCategories"
+            @update:search="eventStore.searchQuery = $event"
+            @update:selectedCategories="eventStore.selectedCategories = $event"
           />
         </div>
 
@@ -82,7 +82,7 @@ onMounted(() => {
   color: #264653;
   margin-bottom: 15px;
   font-size: 1.4rem;
-  border-bottom: 2px solid #2A9D8F;
+  border-bottom: 2px solid #2a9d8f;
   padding-bottom: 8px;
 }
 
@@ -134,7 +134,7 @@ onMounted(() => {
 }
 
 .events-list-container::-webkit-scrollbar-thumb {
-  background: #2A9D8F;
+  background: #2a9d8f;
   border-radius: 4px;
 }
 

@@ -1,18 +1,18 @@
 <template>
   <div class="event-list">
-    <div v-if="loading" class="loading">
-      Chargement des événements...
-    </div>
-    <div v-else-if="events.length === 0" class="no-events">
-      Aucun événement trouvé.
-    </div>
+    <div v-if="loading" class="loading">Chargement des événements...</div>
+    <div v-else-if="events.length === 0" class="no-events">Aucun événement trouvé.</div>
     <div
       v-else
       v-for="event in events"
       :key="event.id"
-      :class="['event-item', { 'selected': isSelected(event) }]"
+      :class="['event-item', { selected: isSelected(event) }]"
       @click="$emit('select', event)"
-      :ref="el => { if (isSelected(event)) selectedItemRef = el as HTMLElement }"
+      :ref="
+        (el) => {
+          if (isSelected(event)) selectedItemRef = el as HTMLElement;
+        }
+      "
     >
       <h3>{{ event.title }}</h3>
       <div class="category-badge">{{ event.category }}</div>
@@ -32,7 +32,7 @@ const props = defineProps<{
 }>();
 
 defineEmits<{
-  'select': [event: Event];
+  select: [event: Event];
 }>();
 
 const selectedItemRef = ref<HTMLElement | null>(null);
@@ -42,14 +42,19 @@ function isSelected(event: Event): boolean {
 }
 
 // Scroll to selected item
-watch(() => props.selectedEvent, async () => {
-  if (props.selectedEvent) {
-    await nextTick();
-    if (selectedItemRef.value && typeof selectedItemRef.value.scrollIntoView === 'function') { // add typeof for testing purpose on scrollIntoView
-      selectedItemRef.value.scrollIntoView({ behavior: 'smooth' });
+watch(
+  () => props.selectedEvent,
+  async () => {
+    if (props.selectedEvent) {
+      await nextTick();
+      if (selectedItemRef.value && typeof selectedItemRef.value.scrollIntoView === 'function') {
+        // add typeof for testing purpose on scrollIntoView
+        selectedItemRef.value.scrollIntoView({ behavior: 'smooth' });
+      }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
@@ -75,7 +80,7 @@ watch(() => props.selectedEvent, async () => {
 
 .event-item.selected {
   background-color: #e8f7f5;
-  border-left: 4px solid #2A9D8F;
+  border-left: 4px solid #2a9d8f;
   box-shadow: 0 4px 12px rgba(42, 157, 143, 0.2);
 }
 
@@ -98,7 +103,7 @@ watch(() => props.selectedEvent, async () => {
 
 .category-badge {
   display: inline-block;
-  background-color: #E9C46A;
+  background-color: #e9c46a;
   color: #333;
   font-weight: 500;
   border-radius: 30px;
@@ -107,7 +112,8 @@ watch(() => props.selectedEvent, async () => {
   margin-bottom: 8px;
 }
 
-.loading, .no-events {
+.loading,
+.no-events {
   padding: 30px;
   text-align: center;
   color: #666;
@@ -125,7 +131,7 @@ watch(() => props.selectedEvent, async () => {
 }
 
 .loading:before {
-  content: "";
+  content: '';
   width: 30px;
   height: 30px;
 }

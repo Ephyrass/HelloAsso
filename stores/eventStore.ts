@@ -21,59 +21,71 @@ export const useEventStore = defineStore('event', () => {
   }
 
   // Initialize filters from URL on load
-  watch(() => route.query, (query) => {
-    if (query.search) {
-      searchQuery.value = query.search as string;
-    } else {
-      searchQuery.value = '';
-    }
-
-    // Handle categories as array
-    if (query.categories) {
-      if (Array.isArray(query.categories)) {
-        selectedCategories.value = query.categories as string[];
+  watch(
+    () => route.query,
+    (query) => {
+      if (query.search) {
+        searchQuery.value = query.search as string;
       } else {
-        selectedCategories.value = [query.categories as string];
+        searchQuery.value = '';
       }
-    } else {
-      selectedCategories.value = [];
-    }
 
-    // Event selection will be processed after data loading
-  }, { immediate: true });
+      // Handle categories as array
+      if (query.categories) {
+        if (Array.isArray(query.categories)) {
+          selectedCategories.value = query.categories as string[];
+        } else {
+          selectedCategories.value = [query.categories as string];
+        }
+      } else {
+        selectedCategories.value = [];
+      }
+
+      // Event selection will be processed after data loading
+    },
+    { immediate: true }
+  );
 
   // Update URL when filters change, but only after initial loading
-  watch([searchQuery, selectedCategories, selectedEvent], () => {
-    // Don't update URL during loading
-    if (loading.value) return;
+  watch(
+    [searchQuery, selectedCategories, selectedEvent],
+    () => {
+      // Don't update URL during loading
+      if (loading.value) return;
 
-    const query: Record<string, string | string[]> = {};
-    if (searchQuery.value) query.search = searchQuery.value;
-    if (selectedCategories.value.length > 0) query.categories = selectedCategories.value;
-    if (selectedEvent.value) query.eventId = String(selectedEvent?.value?.id);
+      const query: Record<string, string | string[]> = {};
+      if (searchQuery.value) query.search = searchQuery.value;
+      if (selectedCategories.value.length > 0) query.categories = selectedCategories.value;
+      if (selectedEvent.value) query.eventId = String(selectedEvent?.value?.id);
 
-    router.replace({ query });
-  }, { deep: true });
+      router.replace({ query });
+    },
+    { deep: true }
+  );
 
   // Watch events to apply initial filters after loading
-  watch(() => events.value, (newEvents) => {
-    if (newEvents.length > 0 && initialQueryParams.value.eventId) {
-      const eventId = String(initialQueryParams.value.eventId);
-      const event = newEvents.find(e => String(e.id) === eventId);
-      if (event) selectedEvent.value = event;
-      // Reset to avoid reapplying on every event change
-      initialQueryParams.value = {};
-    }
-  }, { deep: true });
+  watch(
+    () => events.value,
+    (newEvents) => {
+      if (newEvents.length > 0 && initialQueryParams.value.eventId) {
+        const eventId = String(initialQueryParams.value.eventId);
+        const event = newEvents.find((e) => String(e.id) === eventId);
+        if (event) selectedEvent.value = event;
+        // Reset to avoid reapplying on every event change
+        initialQueryParams.value = {};
+      }
+    },
+    { deep: true }
+  );
 
   const filteredEvents = computed(() => {
-    return events.value.filter(event => {
-      const matchesSearch = !searchQuery.value ||
-          event.title.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return events.value.filter((event) => {
+      const matchesSearch =
+        !searchQuery.value || event.title.toLowerCase().includes(searchQuery.value.toLowerCase());
 
       // Check if no category is selected or if the event belongs to one of the selected categories
-      const matchesCategory = selectedCategories.value.length === 0 ||
-          selectedCategories.value.includes(event.category);
+      const matchesCategory =
+        selectedCategories.value.length === 0 || selectedCategories.value.includes(event.category);
 
       return matchesSearch && matchesCategory;
     });
@@ -90,13 +102,13 @@ export const useEventStore = defineStore('event', () => {
 
       // Extract unique categories
       const uniqueCategories = new Set<string>();
-      events.value.forEach(event => uniqueCategories.add(event.category));
+      events.value.forEach((event) => uniqueCategories.add(event.category));
       categories.value = Array.from(uniqueCategories);
 
       // Restore selected event from URL if needed
       if (route.query.eventId) {
         const eventId = String(route.query.eventId);
-        const event = events.value.find(e => String(e.id) === eventId);
+        const event = events.value.find((e) => String(e.id) === eventId);
         if (event) selectedEvent.value = event;
       }
     } catch (error) {
@@ -119,6 +131,6 @@ export const useEventStore = defineStore('event', () => {
     categories,
     filteredEvents,
     fetchEvents,
-    selectEvent
+    selectEvent,
   };
 });

@@ -8,7 +8,7 @@
       </div>
     </nav>
     <NuxtRouteAnnouncer />
-    <NuxtPage/>
+    <NuxtPage />
   </div>
 </template>
 
@@ -29,7 +29,7 @@ body {
 
 /* Navbar */
 .navbar {
-  background-color: #2A9D8F;
+  background-color: #2a9d8f;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
@@ -54,10 +54,9 @@ body {
   letter-spacing: 0.5px;
 }
 
-
 /* Styles pour les liens */
 a {
-  color: #2A9D8F;
+  color: #2a9d8f;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -65,6 +64,4 @@ a {
 a:hover {
   color: #1e7a70;
 }
-
 </style>
-

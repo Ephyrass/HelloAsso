@@ -23,7 +23,7 @@ vi.mock('leaflet', () => {
         remove: vi.fn(),
         fitBounds: mockFitBounds,
         once: vi.fn(),
-        removeLayer: mockRemoveLayer
+        removeLayer: mockRemoveLayer,
       })),
       marker: vi.fn().mockImplementation(() => ({
         addTo: mockAddTo,
@@ -32,21 +32,21 @@ vi.mock('leaflet', () => {
         setIcon: mockSetIcon,
         openPopup: mockOpenPopup,
         closePopup: mockClosePopup,
-        setZIndexOffset: mockSetZIndexOffset
+        setZIndexOffset: mockSetZIndexOffset,
       })),
       tileLayer: vi.fn().mockImplementation(() => ({
-        addTo: vi.fn().mockReturnThis()
+        addTo: vi.fn().mockReturnThis(),
       })),
       Icon: {
         Default: class {
           constructor() {}
           static mergeOptions = vi.fn();
-        }
+        },
       },
       latLngBounds: vi.fn().mockImplementation(() => ({
-        extend: vi.fn()
-      }))
-    }
+        extend: vi.fn(),
+      })),
+    },
   };
 });
 
@@ -62,18 +62,18 @@ vi.mock('leaflet/dist/leaflet.css', () => ({}));
 const mockEvents = [
   {
     id: 1,
-    title: "Test Event 1",
-    description: "Description 1",
-    category: "sport",
-    coords: { lat: 48.8566, lng: 2.3522 }
+    title: 'Test Event 1',
+    description: 'Description 1',
+    category: 'sport',
+    coords: { lat: 48.8566, lng: 2.3522 },
   },
   {
     id: 2,
-    title: "Test Event 2",
-    description: "Description 2",
-    category: "concerts",
-    coords: { lat: 45.516, lng: 4.8757 }
-  }
+    title: 'Test Event 2',
+    description: 'Description 2',
+    category: 'concerts',
+    coords: { lat: 45.516, lng: 4.8757 },
+  },
 ];
 
 describe('EventMap', () => {
@@ -89,8 +89,8 @@ describe('EventMap', () => {
       props: {
         events: [],
         loading: true,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     expect(wrapper.find('.loading-overlay').exists()).toBe(true);
@@ -102,8 +102,8 @@ describe('EventMap', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     await flushPromises();
@@ -115,8 +115,8 @@ describe('EventMap', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     await flushPromises();
@@ -128,20 +128,19 @@ describe('EventMap', () => {
     expect(mockBindPopup).toHaveBeenCalledTimes(mockEvents.length);
   });
 
-
   it('emits select event when marker is clicked', async () => {
     const wrapper = mount(EventMap, {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     await flushPromises();
 
     // Simulate marker click by directly calling the event handler
-    const clickHandler = mockOn.mock.calls.find(call => call[0] === 'click')?.[1];
+    const clickHandler = mockOn.mock.calls.find((call) => call[0] === 'click')?.[1];
     if (clickHandler) {
       clickHandler();
     }
@@ -154,8 +153,8 @@ describe('EventMap', () => {
       props: {
         events: [],
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     await flushPromises();
@@ -173,5 +172,4 @@ describe('EventMap', () => {
     const leafletModule = await import('leaflet');
     expect(leafletModule.default.marker).toHaveBeenCalledTimes(mockEvents.length);
   });
-
 });

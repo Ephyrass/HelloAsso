@@ -6,18 +6,18 @@ import EventList from './EventList.vue';
 const mockEvents = [
   {
     id: 1,
-    title: "Test Event 1",
-    description: "Description 1",
-    category: "sport",
-    coords: { lat: 48.8566, lng: 2.3522 }
+    title: 'Test Event 1',
+    description: 'Description 1',
+    category: 'sport',
+    coords: { lat: 48.8566, lng: 2.3522 },
   },
   {
     id: 2,
-    title: "Test Event 2",
-    description: "Description 2",
-    category: "concerts",
-    coords: { lat: 45.516, lng: 4.8757 }
-  }
+    title: 'Test Event 2',
+    description: 'Description 2',
+    category: 'concerts',
+    coords: { lat: 45.516, lng: 4.8757 },
+  },
 ];
 
 describe('EventList', () => {
@@ -26,8 +26,8 @@ describe('EventList', () => {
       props: {
         events: [],
         loading: true,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     expect(wrapper.find('.loading').exists()).toBe(true);
@@ -39,8 +39,8 @@ describe('EventList', () => {
       props: {
         events: [],
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     expect(wrapper.find('.no-events').exists()).toBe(true);
@@ -52,8 +52,8 @@ describe('EventList', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     const eventItems = wrapper.findAll('.event-item');
@@ -69,8 +69,8 @@ describe('EventList', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: mockEvents[0]
-      }
+        selectedEvent: mockEvents[0],
+      },
     });
 
     const eventItems = wrapper.findAll('.event-item');
@@ -83,8 +83,8 @@ describe('EventList', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     const eventItems = wrapper.findAll('.event-item');
@@ -103,8 +103,8 @@ describe('EventList', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: mockEvents[1]
-      }
+        selectedEvent: mockEvents[1],
+      },
     });
 
     await flushPromises();
@@ -121,8 +121,8 @@ describe('EventList', () => {
       props: {
         events: mockEvents,
         loading: false,
-        selectedEvent: null
-      }
+        selectedEvent: null,
+      },
     });
 
     await flushPromises();

@@ -4,20 +4,40 @@
       <h3 class="filter-title">Recherche</h3>
       <div class="search-container">
         <div class="search-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </div>
         <input
-            type="text"
-            v-model="searchInput"
-            placeholder="Rechercher un événement..."
-            @input="updateSearch"
-            class="search-input"
+          type="text"
+          v-model="searchInput"
+          placeholder="Rechercher un événement..."
+          @input="updateSearch"
+          class="search-input"
         />
         <button v-if="searchInput" @click="clearSearch" class="clear-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -29,10 +49,10 @@
       <h3 class="filter-title">Catégories</h3>
       <div class="categories-list">
         <div
-            v-for="category in categories"
-            :key="category"
-            :class="['category-chip', { 'selected': isSelected(category) }]"
-            @click="toggleCategory(category)"
+          v-for="category in categories"
+          :key="category"
+          :class="['category-chip', { selected: isSelected(category) }]"
+          @click="toggleCategory(category)"
         >
           {{ capitalizeFirstLetter(category) }}
         </div>
@@ -56,8 +76,7 @@ const emit = defineEmits<{
 }>();
 
 const searchInput = ref(props.search || '');
-const selectedCategoriesInput = ref<string[]>([...props.selectedCategories] || []);
-
+const selectedCategoriesInput = ref<string[]>([...(props.selectedCategories ?? [])]);
 // Initialize on mount
 onMounted(() => {
   if (props.selectedCategories) {
@@ -66,18 +85,25 @@ onMounted(() => {
 });
 
 // Synchronize input values with props
-watch(() => props.search, (newValue) => {
-  searchInput.value = newValue || '';
-});
-
-watch(() => props.selectedCategories, (newValue) => {
-  if (newValue) {
-    // Create a new reference to force reactivity
-    selectedCategoriesInput.value = [...newValue];
-  } else {
-    selectedCategoriesInput.value = [];
+watch(
+  () => props.search,
+  (newValue) => {
+    searchInput.value = newValue || '';
   }
-}, { deep: true });
+);
+
+watch(
+  () => props.selectedCategories,
+  (newValue) => {
+    if (newValue) {
+      // Create a new reference to force reactivity
+      selectedCategoriesInput.value = [...newValue];
+    } else {
+      selectedCategoriesInput.value = [];
+    }
+  },
+  { deep: true }
+);
 
 function updateSearch() {
   emit('update:search', searchInput.value);
@@ -156,7 +182,7 @@ function capitalizeFirstLetter(string: string) {
 
 .search-input:focus {
   outline: none;
-  border-color: #2A9D8F;
+  border-color: #2a9d8f;
   box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
   background-color: white;
 }
@@ -203,9 +229,9 @@ function capitalizeFirstLetter(string: string) {
 }
 
 .category-chip.selected {
-  background-color: #2A9D8F;
+  background-color: #2a9d8f;
   color: white;
-  border-color: #2A9D8F;
+  border-color: #2a9d8f;
   box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);
 }
 
