@@ -1,7 +1,7 @@
 // components/EventFilters.spec.ts
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import EventFilters from './EventFilters.vue';
+import EventFilters from '../../components/EventFilters.vue';
 
 describe('EventFilters', () => {
   const categories = ['sport', 'spectacles', 'concerts', 'ateliers'];

@@ -1,7 +1,7 @@
 // components/EventMap.spec.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import EventMap from './EventMap.vue';
+import EventMap from '../../components/EventMap.vue';
 
 // (Leaflet) mock
 const mockSetIcon = vi.fn();

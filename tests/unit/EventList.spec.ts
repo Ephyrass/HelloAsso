@@ -1,7 +1,7 @@
 // components/EventList.spec.ts
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import EventList from './EventList.vue';
+import EventList from '../../components/EventList.vue';
 
 const mockEvents = [
   {
