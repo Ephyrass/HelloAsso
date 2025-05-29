@@ -29,7 +29,6 @@ onMounted(async () => {
   try {
     // Ensure code runs on client-side
     if (process.client) {
-      // Explicit import of stylesheet
       await import('leaflet/dist/leaflet.css');
 
       const L = await import('leaflet').then((m) => m.default);
@@ -169,7 +168,7 @@ watch(
         if (props.selectedEvent?.coords) {
           map.setView(
             [props.selectedEvent.coords.lat, props.selectedEvent.coords.lng],
-            12, // Zoom level
+            7, // Zoom level
             { animate: true }
           );
         }

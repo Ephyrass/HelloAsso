@@ -13,7 +13,7 @@
 </template>
 
 <style>
-/* Reset et styles de base */
+/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -54,7 +54,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Styles pour les liens */
 a {
   color: #2a9d8f;
   text-decoration: none;
