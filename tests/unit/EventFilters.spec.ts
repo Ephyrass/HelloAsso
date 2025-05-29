@@ -1,162 +1,108 @@
-// components/EventFilters.spec.ts
-import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
-import EventFilters from '../../components/EventFilters.vue';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import EventFilters from '~/components/EventFilters.vue';
+import { useEventStore } from '~/stores/eventStore';
+
+// Mock Vue router to avoid errors
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(() => ({ query: {} })),
+  useRouter: vi.fn(() => ({ replace: vi.fn() })),
+}));
 
 describe('EventFilters', () => {
-  const categories = ['sport', 'spectacles', 'concerts', 'ateliers'];
-
-  it('correctly displays interface elements', () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: [],
-      },
-    });
-
-    expect(wrapper.find('input[type="text"]').exists()).toBe(true);
-    expect(wrapper.findAll('.category-chip').length).toBe(categories.length);
-    expect(wrapper.find('.search-icon').exists()).toBe(true);
-    expect(wrapper.find('.filter-title').text()).toContain('Recherche');
-    expect(wrapper.findAll('.filter-title')[1].text()).toContain('Catégories');
+  beforeEach(() => {
+    // Set up a new pinia instance for each test
+    setActivePinia(createPinia());
+    
+    // Prepare the store with test data
+    const store = useEventStore();
+    store.categories = ['sport', 'culture', 'musique'];
+    store.searchQuery = '';
+    store.selectedCategories = [];
   });
 
-  it('initializes values with props', () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: 'Paris',
-        categories,
-        selectedCategories: ['sport', 'concerts'],
-      },
-    });
-
-    const input: any = wrapper.find('input[type="text"]');
-    expect(input.element.value).toBe('Paris');
-
-    const selectedChips = wrapper.findAll('.category-chip.selected');
-    expect(selectedChips.length).toBe(2);
-    expect(selectedChips[0].text()).toContain('Sport');
-    expect(selectedChips[1].text()).toContain('Concerts');
+  it('renders the component correctly', () => {
+    const wrapper = mount(EventFilters);
+    expect(wrapper.find('.filters-container').exists()).toBe(true);
+    expect(wrapper.find('.search-input').exists()).toBe(true);
+    expect(wrapper.find('.categories-list').exists()).toBe(true);
   });
 
-  it('emits update:search event when input is modified', async () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: [],
-      },
-    });
-
-    const input = wrapper.find('input[type="text"]');
-    await input.setValue('Concert');
-
-    expect(wrapper.emitted('update:search')).toBeTruthy();
-    expect(wrapper.emitted('update:search')![0]).toEqual(['Concert']);
+  it('displays all categories from the store', () => {
+    const wrapper = mount(EventFilters);
+    const categories = wrapper.findAll('.category-chip');
+    
+    expect(categories.length).toBe(3);
+    expect(categories[0].text()).toBe('Sport');
+    expect(categories[1].text()).toBe('Culture');
+    expect(categories[2].text()).toBe('Musique');
   });
 
-  it('emits update:selectedCategories event when clicking on a category', async () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: [],
-      },
-    });
-
-    const categoryChips = wrapper.findAll('.category-chip');
-    await categoryChips[1].trigger('click'); // Click on "spectacles"
-
-    expect(wrapper.emitted('update:selectedCategories')).toBeTruthy();
-    expect(wrapper.emitted('update:selectedCategories')![0][0]).toEqual(['spectacles']);
+  it('updates the search when typing in the input field', async () => {
+    const wrapper = mount(EventFilters);
+    const store = useEventStore();
+    
+    const input = wrapper.find('.search-input');
+    await input.setValue('concert');
+    
+    expect(store.searchQuery).toBe('concert');
   });
 
-  it('adds and removes categories from selection', async () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: ['sport'],
-      },
-    });
-
-    // Verify a category is already selected
-    let selectedChips = wrapper.findAll('.category-chip.selected');
-    expect(selectedChips.length).toBe(1);
-    expect(selectedChips[0].text()).toContain('Sport');
-
-    // Click to add a new category
-    const categoryChips = wrapper.findAll('.category-chip');
-    const concertsChip = categoryChips[2]; // "concerts" is at index 2
-    await concertsChip.trigger('click');
-
-    // Verify the event is emitted with correct values
-    expect(wrapper.emitted('update:selectedCategories')).toBeTruthy();
-    expect(wrapper.emitted('update:selectedCategories')![0][0]).toEqual(['sport', 'concerts']);
-
-    const sportChip = categoryChips[0];
-    await sportChip.trigger('click');
-
-    expect(wrapper.emitted('update:selectedCategories')![1][0]).toEqual(['concerts']);
-  });
-
-  it('resets search when clicking the clear button', async () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: 'Paris',
-        categories,
-        selectedCategories: [],
-      },
-    });
-
-    expect(wrapper.find('.clear-btn').exists()).toBe(true);
-
+  it('clears the search when clicking the clear button', async () => {
+    const wrapper = mount(EventFilters);
+    const store = useEventStore();
+    
+    // First set a value
+    await wrapper.find('.search-input').setValue('concert');
+    expect(store.searchQuery).toBe('concert');
+    
+    // Then click to clear
     await wrapper.find('.clear-btn').trigger('click');
-
-    expect(wrapper.emitted('update:search')).toBeTruthy();
-    expect(wrapper.emitted('update:search')![0]).toEqual(['']);
-    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('');
-
-    await wrapper.vm.$nextTick();
-    expect(wrapper.find('.clear-btn').exists()).toBe(false);
+    expect(store.searchQuery).toBe('');
+    expect((wrapper.find('.search-input').element as HTMLInputElement).value).toBe('');
   });
 
-  it('correctly capitalizes the first letter of categories', () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: [],
-      },
-    });
+  it('selects a category on click', async () => {
+    const wrapper = mount(EventFilters);
+    const store = useEventStore();
+    
+    const categoryChip = wrapper.findAll('.category-chip')[0];
+    await categoryChip.trigger('click');
+    
+    expect(store.selectedCategories).toContain('sport');
+    expect(categoryChip.classes()).toContain('selected');
+  });
 
+  it('deselects a category on second click', async () => {
+    const wrapper = mount(EventFilters);
+    const store = useEventStore();
+    
+    // First select it
+    store.selectedCategories = ['sport'];
+    await (wrapper.vm as any).$nextTick();
+    
+    // Check that it's selected
+    const categoryChip = wrapper.findAll('.category-chip')[0];
+    expect(categoryChip.classes()).toContain('selected');
+    
+    // Deselect it
+    await categoryChip.trigger('click');
+    expect(store.selectedCategories).not.toContain('sport');
+  });
+
+  it('synchronizes with store values', async () => {
+    const store = useEventStore();
+    store.searchQuery = 'event';
+    store.selectedCategories = ['culture'];
+    
+    const wrapper = mount(EventFilters);
+    
+    // Check that the search input has the correct value
+    expect((wrapper.find('.search-input').element as HTMLInputElement).value).toBe('event');
+    
+    // Check that the right category is selected
     const categoryChips = wrapper.findAll('.category-chip');
-    categories.forEach((category, index) => {
-      const expectedText = category.charAt(0).toUpperCase() + category.slice(1);
-      expect(categoryChips[index].text().trim()).toBe(expectedText);
-    });
-  });
-
-  it('updates selection when selectedCategories props change', async () => {
-    const wrapper = mount(EventFilters, {
-      props: {
-        search: '',
-        categories,
-        selectedCategories: [],
-      },
-    });
-
-    // Initially, no category is selected
-    expect(wrapper.findAll('.category-chip.selected').length).toBe(0);
-
-    // Update the selectedCategories prop
-    await wrapper.setProps({ selectedCategories: ['sport', 'ateliers'] });
-
-    // Verify the right categories are now selected
-    const selectedChips = wrapper.findAll('.category-chip.selected');
-    expect(selectedChips.length).toBe(2);
-    expect(selectedChips[0].text()).toContain('Sport');
-    expect(selectedChips[1].text()).toContain('Ateliers');
+    expect(categoryChips[1].classes()).toContain('selected'); // culture is at index 1
   });
 });

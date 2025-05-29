@@ -8,32 +8,16 @@
     <div class="events-layout">
       <div class="events-list-container">
         <h2 class="section-title">Événements</h2>
-        <EventList
-          :events="eventStore.filteredEvents"
-          :loading="eventStore.loading"
-          :selectedEvent="eventStore.selectedEvent"
-          @select="eventStore.selectEvent"
-        />
+        <EventList />
       </div>
 
       <div class="events-right-container">
         <div class="events-search-container">
-          <EventFilters
-            :search="eventStore.searchQuery"
-            :categories="eventStore.categories"
-            :selectedCategories="eventStore.selectedCategories"
-            @update:search="eventStore.searchQuery = $event"
-            @update:selectedCategories="eventStore.selectedCategories = $event"
-          />
+          <EventFilters />
         </div>
 
         <div class="events-map-container">
-          <EventMap
-            :events="eventStore.filteredEvents"
-            :selectedEvent="eventStore.selectedEvent"
-            @select="eventStore.selectEvent"
-            :loading="eventStore.loading"
-          />
+          <EventMap />
         </div>
       </div>
     </div>
