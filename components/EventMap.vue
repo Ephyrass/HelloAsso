@@ -9,7 +9,7 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import type { Map, Marker, } from 'leaflet';
 import { useEventStore } from '~/stores/eventStore';
-import type { Event } from '~/types/Event';
+
 
 const eventStore = useEventStore();
 
@@ -24,7 +24,7 @@ function isValidCoords(coords: any): boolean {
 }
 
 // Initialize Leaflet icons
-function leafletIcons(L: typeof import('leaflet').default) {
+function leafletIcons(L: any) {
   delete L.Icon.Default.prototype._getIconUrl;
 
   L.Icon.Default.mergeOptions({
@@ -35,7 +35,7 @@ function leafletIcons(L: typeof import('leaflet').default) {
 }
 
 // Create a highlighted icon for the selected event
-function createHighlightedIcon(L: typeof import('leaflet').default) {
+function createHighlightedIcon(L: any) {
   return new L.Icon({
     iconUrl:
       'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png',
@@ -48,7 +48,7 @@ function createHighlightedIcon(L: typeof import('leaflet').default) {
 }
 
 // Add markers for events
-function addEventMarkers(L: typeof import('leaflet').default) {
+function addEventMarkers(L: any) {
   if (!map) return;
 
   // Remove existing markers
@@ -94,7 +94,7 @@ function addEventMarkers(L: typeof import('leaflet').default) {
 }
 
 // Cache for Leaflet to avoid repeated imports
-let leafletInstance: typeof import('leaflet').default | null = null;
+let leafletInstance: any | null = null;
 
 onMounted(async () => {
   try {
@@ -157,7 +157,7 @@ watch(
 
         // Center map on selected marker with smooth animation
         if (eventStore.selectedEvent?.coords && isValidCoords(eventStore.selectedEvent.coords)) {
-          map.setView(
+          map?.setView(
             [eventStore.selectedEvent.coords.lat, eventStore.selectedEvent.coords.lng],
             7, // Zoom level
             { animate: true }
