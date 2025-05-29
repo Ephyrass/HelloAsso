@@ -49,7 +49,7 @@
       <h3 class="filter-title">Catégories</h3>
       <div class="categories-list">
         <div
-          v-for="category in categories"
+          v-for="category in eventStore.categories"
           :key="category"
           :class="['category-chip', { selected: isSelected(category) }]"
           @click="toggleCategory(category)"
@@ -63,37 +63,30 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
+import { useEventStore } from '~/stores/eventStore';
 
-const props = defineProps<{
-  search: string;
-  categories: string[];
-  selectedCategories: string[];
-}>();
+const eventStore = useEventStore();
 
-const emit = defineEmits<{
-  'update:search': [value: string];
-  'update:selectedCategories': [value: string[]];
-}>();
+const searchInput = ref(eventStore.searchQuery || '');
+const selectedCategoriesInput = ref<string[]>([...(eventStore.selectedCategories ?? [])]);
 
-const searchInput = ref(props.search || '');
-const selectedCategoriesInput = ref<string[]>([...(props.selectedCategories ?? [])]);
 // Initialize on mount
 onMounted(() => {
-  if (props.selectedCategories) {
-    selectedCategoriesInput.value = [...props.selectedCategories];
+  if (eventStore.selectedCategories) {
+    selectedCategoriesInput.value = [...eventStore.selectedCategories];
   }
 });
 
-// Synchronize input values with props
+// Synchronize input values with store
 watch(
-  () => props.search,
+  () => eventStore.searchQuery,
   (newValue) => {
     searchInput.value = newValue || '';
   }
 );
 
 watch(
-  () => props.selectedCategories,
+  () => eventStore.selectedCategories,
   (newValue) => {
     if (newValue) {
       // Create a new reference to force reactivity
@@ -106,16 +99,16 @@ watch(
 );
 
 function updateSearch() {
-  emit('update:search', searchInput.value);
+  eventStore.searchQuery = searchInput.value;
 }
 
 function clearSearch() {
   searchInput.value = '';
-  emit('update:search', '');
+  eventStore.searchQuery = '';
 }
 
 function isSelected(category: string): boolean {
-  return selectedCategoriesInput.value.includes(category);
+  return eventStore.selectedCategories.includes(category);
 }
 
 function toggleCategory(category: string) {
@@ -125,7 +118,7 @@ function toggleCategory(category: string) {
   } else {
     selectedCategoriesInput.value.splice(index, 1);
   }
-  emit('update:selectedCategories', [...selectedCategoriesInput.value]);
+  eventStore.selectedCategories = [...selectedCategoriesInput.value];
 }
 
 function capitalizeFirstLetter(string: string) {

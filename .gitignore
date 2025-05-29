@@ -1,3 +1,4 @@
 # Ignore node_modules directory
 node_modules/
-
+# Ignore Nuxt.js build output
+.nuxt/

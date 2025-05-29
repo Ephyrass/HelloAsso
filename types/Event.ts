@@ -1,10 +1,12 @@
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
 export interface Event {
   id: string | number;
   title: string;
   description: string;
   category: string;
-  coords: {
-    lat: number;
-    lng: number;
-  };
+  coords: Coordinates;
 }

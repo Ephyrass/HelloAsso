@@ -1,67 +1,30 @@
 <template>
   <div class="map-container">
-    <div v-if="loading" class="loading-overlay">Chargement de la carte...</div>
+    <div v-if="eventStore.loading" class="loading-overlay">Chargement de la carte...</div>
     <div id="map" ref="mapContainer"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch, onUnmounted } from 'vue';
+import type { Map, Marker, } from 'leaflet';
+import { useEventStore } from '~/stores/eventStore';
 import type { Event } from '~/types/Event';
-import type { Marker } from 'leaflet';
 
-const props = defineProps<{
-  events: Event[];
-  loading: boolean;
-  selectedEvent: Event | null;
-}>();
-
-const emit = defineEmits<{
-  select: [event: Event];
-}>();
+const eventStore = useEventStore();
 
 const mapContainer = ref<HTMLElement | null>(null);
-let map: any = null;
-let markers: any = {};
-const debugInfo = ref('');
+let map: Map | null = null;
+let markers: Record<string | number, Marker> = {};
 
-onMounted(async () => {
-  try {
-    // Ensure code runs on client-side
-    if (process.client) {
-      await import('leaflet/dist/leaflet.css');
+// Fonctions utilitaires pour une meilleure organisation
+function isValidCoords(coords: any): boolean {
+  return coords && typeof coords.lat === 'number' && typeof coords.lng === 'number'
+    && !isNaN(coords.lat) && !isNaN(coords.lng);
+}
 
-      const L = await import('leaflet').then((m) => m.default);
-
-      debugInfo.value = `Leaflet loaded. Container: ${mapContainer.value ? 'OK' : 'Missing'}`;
-
-      leafletIcons(L);
-
-      // Initialize map
-      if (mapContainer.value) {
-        map = L.map(mapContainer.value).setView([48.8566, 2.3522], 6);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
-
-        // Check if events with coordinates are available
-        const eventsWithCoords = props.events.filter((e) => e.coords && true && true);
-
-        debugInfo.value = `Events with coordinates: ${eventsWithCoords.length}/${props.events.length}`;
-
-        // Add markers for events
-        addEventMarkers(L);
-      }
-    }
-  } catch (error) {
-    console.error('Error initializing map:', error);
-    debugInfo.value = `Error: ${error instanceof Error ? error.message : String(error)}`;
-  }
-});
-
-function leafletIcons(L: any) {
+// Initialize Leaflet icons
+function leafletIcons(L: typeof import('leaflet').default) {
   delete L.Icon.Default.prototype._getIconUrl;
 
   L.Icon.Default.mergeOptions({
@@ -71,57 +34,8 @@ function leafletIcons(L: any) {
   });
 }
 
-function addEventMarkers(L: any) {
-  if (!map) return;
-
-  // Remove existing markers
-  Object.values(markers).forEach((marker: any) => {
-    map.removeLayer(marker);
-  });
-  markers = {};
-
-  const bounds = L.latLngBounds();
-  let markerCount = 0;
-
-  props.events.forEach((event) => {
-    // Stricter coordinate validation
-    if (event.coords && !isNaN(event.coords.lat) && !isNaN(event.coords.lng)) {
-      const isSelected = props.selectedEvent && props.selectedEvent.id === event.id;
-      const markerOptions = isSelected ? { icon: createHighlightedIcon(L) } : {};
-
-      const marker = L.marker([event.coords.lat, event.coords.lng], markerOptions).addTo(map)
-        .bindPopup(`<strong>${event.title}</strong><br>
-                <span class="category">${event.category}</span><br>
-                <p class="description">${event.description}</p>`);
-
-      marker.on('click', () => {
-        emit('select', event);
-      });
-
-      // Immediately open popup if this event is selected
-      if (isSelected) {
-        // Use setTimeout to ensure the popup opens after the marker is fully initialized
-        setTimeout(() => {
-          marker.openPopup();
-        }, 100);
-      }
-
-      markers[event.id] = marker;
-      bounds.extend([event.coords.lat, event.coords.lng]);
-      markerCount++;
-    }
-  });
-
-  debugInfo.value = `Markers added: ${markerCount}`;
-
-  // Replace isEmpty() with a check for marker count
-  if (markerCount > 0) {
-    map.fitBounds(bounds, { padding: [50, 50] });
-  }
-}
-
-// Create a highlighted icon for the selected marker
-function createHighlightedIcon(L: any) {
+// Create a highlighted icon for the selected event
+function createHighlightedIcon(L: typeof import('leaflet').default) {
   return new L.Icon({
     iconUrl:
       'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png',
@@ -133,41 +47,118 @@ function createHighlightedIcon(L: any) {
   });
 }
 
+// Add markers for events
+function addEventMarkers(L: typeof import('leaflet').default) {
+  if (!map) return;
+
+  // Remove existing markers
+  Object.values(markers).forEach((marker) => {
+    map!.removeLayer(marker);
+  });
+  markers = {};
+
+  const bounds = L.latLngBounds();
+  let markerCount = 0;
+
+  eventStore.filteredEvents.forEach((event) => {
+    if (isValidCoords(event.coords)) {
+      const isSelected = eventStore.selectedEvent && eventStore.selectedEvent.id === event.id;
+      const markerOptions = isSelected ? { icon: createHighlightedIcon(L) } : {};
+
+      const marker = L.marker([event.coords.lat, event.coords.lng], markerOptions).addTo(map)
+        .bindPopup(`<strong>${event.title}</strong><br>
+                <span class="category">${event.category}</span><br>
+                <p class="description">${event.description}</p>`);
+
+      marker.on('click', () => {
+        eventStore.selectEvent(event);
+      });
+
+      // Immediately open the popup if this event is selected
+      if (isSelected) {
+        setTimeout(() => {
+          marker.openPopup();
+        }, 100);
+      }
+
+      markers[event.id] = marker;
+      bounds.extend([event.coords.lat, event.coords.lng]);
+      markerCount++;
+    }
+  });
+
+  // Adjust map view if markers are present
+  if (markerCount > 0) {
+    map.fitBounds(bounds, { padding: [50, 50] });
+  }
+}
+
+// Cache for Leaflet to avoid repeated imports
+let leafletInstance: typeof import('leaflet').default | null = null;
+
+onMounted(async () => {
+  try {
+    // Ensure code runs on client side
+    if (process.client) {
+      await import('leaflet/dist/leaflet.css');
+
+      if (!leafletInstance) {
+        leafletInstance = await import('leaflet').then((m) => m.default);
+      }
+      const L = leafletInstance;
+
+      leafletIcons(L);
+
+      // Initialize map
+      if (mapContainer.value) {
+        map = L.map(mapContainer.value).setView([48.8566, 2.3522], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Add markers for events
+        addEventMarkers(L);
+      }
+    }
+  } catch (error) {
+    console.error('Error initializing map:', error);
+  }
+});
+
 watch(
-  () => props.events,
+  () => eventStore.filteredEvents,
   async () => {
     if (map && process.client) {
-      const L = await import('leaflet').then((m) => m.default);
-      addEventMarkers(L);
+      if (!leafletInstance) {
+        leafletInstance = await import('leaflet').then((m) => m.default);
+      }
+      addEventMarkers(leafletInstance);
     }
   },
   { deep: true }
 );
 
 watch(
-  () => props.selectedEvent,
+  () => eventStore.selectedEvent,
   async () => {
     if (!map || !process.client) return;
 
-    const L = await import('leaflet').then((m) => m.default);
-
-    let selectedMarker: Marker | null = null;
+    if (!leafletInstance) {
+      leafletInstance = await import('leaflet').then((m) => m.default);
+    }
+    const L = leafletInstance;
 
     Object.entries(markers).forEach(([id, marker]: [string, any]) => {
-      const isSelected = props.selectedEvent && String(props.selectedEvent.id) === String(id);
+      const isSelected = eventStore.selectedEvent && String(eventStore.selectedEvent.id) === String(id);
 
       if (isSelected) {
         marker.setIcon(createHighlightedIcon(L));
-        selectedMarker = marker;
         marker.setZIndexOffset(1000);
-
-        // Open the selected marker's popup
         marker.openPopup();
 
-        // Center the map on the selected marker with smooth animation
-        if (props.selectedEvent?.coords) {
+        // Center map on selected marker with smooth animation
+        if (eventStore.selectedEvent?.coords && isValidCoords(eventStore.selectedEvent.coords)) {
           map.setView(
-            [props.selectedEvent.coords.lat, props.selectedEvent.coords.lng],
+            [eventStore.selectedEvent.coords.lat, eventStore.selectedEvent.coords.lng],
             7, // Zoom level
             { animate: true }
           );
@@ -182,7 +173,7 @@ watch(
   { immediate: true }
 );
 
-// Clean up the map when component is unmounted
+// Clean up map when component is unmounted
 onUnmounted(() => {
   if (map) {
     map.remove();
