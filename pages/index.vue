@@ -25,14 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useEventStore } from '~/stores/eventStore';
+import { onMounted } from 'vue'
+import { useEventStore } from '~/stores/eventStore'
 
-const eventStore = useEventStore();
+const eventStore = useEventStore()
 
 onMounted(() => {
-  eventStore.fetchEvents();
-});
+  eventStore.fetchEvents()
+})
 </script>
 
 <style>
@@ -132,7 +132,7 @@ onMounted(() => {
   .events-page {
     padding: 15px;
   }
-  
+
   .events-list-container {
     width: 320px;
   }
@@ -147,7 +147,7 @@ onMounted(() => {
     width: 100%;
     height: 300px;
   }
-  
+
   .events-map-container {
     height: 400px;
   }
@@ -157,24 +157,24 @@ onMounted(() => {
   .page-header h1 {
     font-size: 1.6rem;
   }
-  
+
   .subtitle {
     font-size: 1rem;
   }
-  
+
   .section-title {
     font-size: 1.2rem;
   }
-  
+
   .events-page {
     margin: 15px auto;
     padding: 10px;
   }
-  
+
   .events-list-container {
     height: 250px;
   }
-  
+
   .events-map-container {
     height: 350px;
   }
@@ -184,21 +184,21 @@ onMounted(() => {
   .page-header {
     padding: 10px 0;
   }
-  
+
   .page-header h1 {
     font-size: 1.4rem;
     margin-bottom: 5px;
   }
-  
+
   .subtitle {
     font-size: 0.9rem;
   }
-  
+
   .events-list-container {
     height: 200px;
     padding: 10px;
   }
-  
+
   .events-map-container {
     height: 300px;
   }

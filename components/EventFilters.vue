@@ -62,67 +62,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import { useEventStore } from '~/stores/eventStore';
+import { ref, watch, onMounted } from 'vue'
+import { useEventStore } from '~/stores/eventStore'
 
-const eventStore = useEventStore();
+const eventStore = useEventStore()
 
-const searchInput = ref(eventStore.searchQuery || '');
-const selectedCategoriesInput = ref<string[]>([...(eventStore.selectedCategories ?? [])]);
+const searchInput = ref(eventStore.searchQuery || '')
+const selectedCategoriesInput = ref<string[]>([...(eventStore.selectedCategories ?? [])])
 
 // Initialize on mount
 onMounted(() => {
   if (eventStore.selectedCategories) {
-    selectedCategoriesInput.value = [...eventStore.selectedCategories];
+    selectedCategoriesInput.value = [...eventStore.selectedCategories]
   }
-});
+})
 
 // Synchronize input values with store
 watch(
   () => eventStore.searchQuery,
   (newValue) => {
-    searchInput.value = newValue || '';
+    searchInput.value = newValue || ''
   }
-);
+)
 
 watch(
   () => eventStore.selectedCategories,
   (newValue) => {
     if (newValue) {
       // Create a new reference to force reactivity
-      selectedCategoriesInput.value = [...newValue];
+      selectedCategoriesInput.value = [...newValue]
     } else {
-      selectedCategoriesInput.value = [];
+      selectedCategoriesInput.value = []
     }
   },
   { deep: true }
-);
+)
 
 function updateSearch() {
-  eventStore.searchQuery = searchInput.value;
+  eventStore.searchQuery = searchInput.value
 }
 
 function clearSearch() {
-  searchInput.value = '';
-  eventStore.searchQuery = '';
+  searchInput.value = ''
+  eventStore.searchQuery = ''
 }
 
 function isSelected(category: string): boolean {
-  return eventStore.selectedCategories.includes(category);
+  return eventStore.selectedCategories.includes(category)
 }
 
 function toggleCategory(category: string) {
-  const index = selectedCategoriesInput.value.indexOf(category);
+  const index = selectedCategoriesInput.value.indexOf(category)
   if (index === -1) {
-    selectedCategoriesInput.value.push(category);
+    selectedCategoriesInput.value.push(category)
   } else {
-    selectedCategoriesInput.value.splice(index, 1);
+    selectedCategoriesInput.value.splice(index, 1)
   }
-  eventStore.selectedCategories = [...selectedCategoriesInput.value];
+  eventStore.selectedCategories = [...selectedCategoriesInput.value]
 }
 
 function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return string.charAt(0).toUpperCase() + string.slice(1)
 }
 </script>
 
