@@ -3,17 +3,9 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useEventStore } from '~/stores/eventStore'
 
-// Define the Event interface to match your application's model
-interface Event {
-  id: number
-  title: string
-  description: string
-  category: string
-  coords: {
-    lat: number
-    lng: number
-  }
-}
+import type { Event } from '~/types/Event'
+
+
 
 // Mock EventMap component
 vi.mock('~/components/EventMap.vue', () => ({

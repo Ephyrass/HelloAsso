@@ -2,18 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useEventStore } from '~/stores/eventStore'
+import type { Event } from '~/types/Event'
 
-// Define the Event interface to match your application's model
-interface Event {
-  id: number
-  title: string
-  description: string
-  category: string
-  coords: {
-    lat: number
-    lng: number
-  }
-}
 
 // Since we don't have access to the EventList component, we'll simulate it
 vi.mock('~/components/EventList.vue', () => ({

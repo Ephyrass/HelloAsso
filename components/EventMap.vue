@@ -8,7 +8,13 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 import type { Map, Marker } from 'leaflet'
+import type { Event } from '~/types/Event'
+
 import { useEventStore } from '~/stores/eventStore'
+
+defineProps<{
+  events: Event[]
+}>()
 
 const eventStore = useEventStore()
 
@@ -16,7 +22,6 @@ const mapContainer = ref<HTMLElement | null>(null)
 let map: Map | null = null
 let markers: Record<string | number, Marker> = {}
 
-// Fonctions utilitaires pour une meilleure organisation
 function isValidCoords(coords: any): boolean {
   return (
     coords &&
@@ -38,7 +43,6 @@ function leafletIcons(L: any) {
   })
 }
 
-// Create a highlighted icon for the selected event
 function createHighlightedIcon(L: any) {
   return new L.Icon({
     iconUrl:
@@ -51,7 +55,6 @@ function createHighlightedIcon(L: any) {
   })
 }
 
-// Add markers for events
 function addEventMarkers(L: any) {
   if (!map) return
 
