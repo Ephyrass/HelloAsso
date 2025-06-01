@@ -8,13 +8,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, onUnmounted } from 'vue'
 import type { Map, Marker } from 'leaflet'
-import type { Event } from '~/types/Event'
 
 import { useEventStore } from '~/stores/eventStore'
 
-defineProps<{
-  events: Event[]
-}>()
+
 
 const eventStore = useEventStore()
 
@@ -215,5 +212,27 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   z-index: 2;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .map-container {
+    min-height: 350px;
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    min-height: 250px;
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container {
+    min-height: 180px;
+    height: 180px;
+  }
 }
 </style>

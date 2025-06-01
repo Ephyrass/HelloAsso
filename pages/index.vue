@@ -141,11 +141,13 @@ onMounted(() => {
 @media (max-width: 1024px) {
   .events-layout {
     flex-direction: column;
+    gap: 18px;
   }
 
   .events-list-container {
     width: 100%;
     height: 300px;
+    margin-bottom: 10px;
   }
 
   .events-map-container {
@@ -173,10 +175,24 @@ onMounted(() => {
 
   .events-list-container {
     height: 250px;
+    padding: 10px;
   }
 
   .events-map-container {
     height: 350px;
+  }
+}
+
+@media (max-width: 600px) {
+  .events-layout {
+    gap: 10px;
+  }
+  .events-list-container {
+    height: 180px;
+    padding: 7px;
+  }
+  .events-map-container {
+    height: 220px;
   }
 }
 
@@ -195,12 +211,12 @@ onMounted(() => {
   }
 
   .events-list-container {
-    height: 200px;
-    padding: 10px;
+    height: 120px;
+    padding: 5px;
   }
 
   .events-map-container {
-    height: 300px;
+    height: 140px;
   }
 }
 </style>

@@ -237,5 +237,25 @@ function capitalizeFirstLetter(string: string) {
     padding: 6px 12px;
     font-size: 0.85rem;
   }
+  .categories-list {
+    gap: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-container {
+    padding: 10px;
+    gap: 12px;
+  }
+  .filter-title {
+    font-size: 1rem;
+  }
+  .category-chip {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+  .categories-list {
+    gap: 5px;
+  }
 }
 </style>

@@ -63,4 +63,25 @@ a {
 a:hover {
   color: #1e7a70;
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0.6rem 1rem;
+  }
+  
+  .logo-text {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0.4rem 0.5rem;
+  }
+  
+  .logo-text {
+    font-size: 1rem;
+  }
+}
 </style>
