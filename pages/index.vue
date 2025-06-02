@@ -23,7 +23,7 @@
     <div class="events-layout">
       <div 
         class="events-list-container"
-        :class="{ 'mobile-hidden': activeTab === 'map' }"
+        :class="{ 'mobile-hidden': isMobile && activeTab === 'map' }"
       >
         <h2 class="section-title">Événements</h2>
         <EventList />
@@ -36,7 +36,7 @@
 
         <div 
           class="events-map-container"
-          :class="{ 'mobile-hidden': activeTab === 'list' }"
+          :class="{ 'mobile-hidden': isMobile && activeTab === 'list' }"
         >
           <EventMap />
         </div>
@@ -46,14 +46,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useEventStore } from '~/stores/eventStore'
 
 const eventStore = useEventStore()
-const activeTab = ref('list') // Par défaut, afficher la liste sur mobile
+const activeTab = ref('list')
+const isMobile = ref(false)
+
+function checkIsMobile() {
+  isMobile.value = window.innerWidth <= 1024
+}
 
 onMounted(() => {
   eventStore.fetchEvents()
+  
+  checkIsMobile()
+  
+  window.addEventListener('resize', checkIsMobile)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkIsMobile)
 })
 </script>
 
@@ -149,7 +162,7 @@ onMounted(() => {
   background: #264653;
 }
 
-/* Styles pour la bascule sur mobile */
+/* Styles pour les onglets mobiles */
 .mobile-tabs {
   display: none;
   margin-bottom: 15px;
@@ -165,7 +178,7 @@ onMounted(() => {
   border: none;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   color: #264653;
 }
 
@@ -190,28 +203,36 @@ onMounted(() => {
 }
 
 @media (max-width: 1024px) {
-  .mobile-tabs {
-    display: flex;
-  }
-  
   .events-layout {
     flex-direction: column;
   }
 
-  .events-list-container,
-  .events-map-container {
+  .events-list-container {
     width: 100%;
+    height: 300px;
+  }
+
+  .events-map-container {
+    height: 400px;
+  }
+
+  .mobile-tabs {
+    display: flex;
+  }
+
+  .events-list-container {
+    height: calc(100vh - 300px);
+  }
+
+  .events-map-container {
     height: calc(100vh - 300px);
   }
 }
 
 @media (max-width: 768px) {
-  .page-header {
-    padding-top: 50px;
-  }
   .page-header h1 {
     font-size: 1.6rem;
-margin-bottom: 5px; }
+  }
 
   .subtitle {
     font-size: 1rem;
@@ -226,14 +247,27 @@ margin-bottom: 5px; }
     padding: 10px;
   }
 
-  .events-list-container,
+  .events-list-container {
+    height: 250px;
+  }
+
   .events-map-container {
-    height: calc(100vh - 270px);
+    height: 350px;
+  }
+
+  .events-list-container {
+    height: calc(100vh - 250px);
+  }
+
+  .events-map-container {
+    height: calc(100vh - 250px);
   }
 }
 
 @media (max-width: 480px) {
-
+  .page-header {
+    padding-top: 50px;
+  }
 
   .page-header h1 {
     font-size: 1.4rem;
@@ -245,12 +279,28 @@ margin-bottom: 5px; }
   }
 
   .events-list-container {
-    height: 300px;
+    height: 200px;
     padding: 10px;
   }
 
   .events-map-container {
-    height: calc(100vh - 250px);
+    height: 300px;
+  }
+
+  .events-list-container {
+    height: calc(100vh - 220px);
+  }
+
+  .events-map-container {
+    height: calc(100vh - 220px);
+  }
+}
+
+/* Style normal pour les deux conteneurs, sans le toggle sur grand écran */
+@media (min-width: 1025px) {
+  .events-list-container, 
+  .events-map-container {
+    display: block !important; /* Force l'affichage sur grand écran */
   }
 }
 </style>
