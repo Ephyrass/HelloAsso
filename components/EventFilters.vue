@@ -162,22 +162,22 @@ function shareUrl() {
 .search-icon {
   position: absolute;
   left: 12px;
-  color: #777;
+  color: var(--color-grey-dark);
 }
 
 .search-input {
   width: 100%;
   padding: 12px 40px 12px 38px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-grey);
   border-radius: 30px;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background-color: #f9f9f9;
+  background-color: var(--color-light)
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #2a9d8f;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
   background-color: white;
 }
@@ -187,7 +187,9 @@ function shareUrl() {
   right: 12px;
   background: none;
   border: none;
-  color: #777;
+  color: var(--color-grey-dark);
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
   cursor: pointer;
   padding: 5px;
   border-radius: 50%;
@@ -197,8 +199,8 @@ function shareUrl() {
 }
 
 .clear-btn:hover {
-  background-color: #f1f1f1;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--color-text);
 }
 
 .categories-list {
@@ -209,8 +211,8 @@ function shareUrl() {
 }
 
 .category-chip {
-  background-color: #f1f1f1;
-  border: 1px solid #e0e0e0;
+  background-color: var(--background-color);
+  border: 1px solid var(--color-grey);
   border-radius: 30px;
   padding: 8px 15px;
   font-size: 0.9rem;
@@ -224,9 +226,9 @@ function shareUrl() {
 }
 
 .category-chip.selected {
-  background-color: #2a9d8f;
+  background-color: var(--color-primary);
   color: white;
-  border-color: #2a9d8f;
+  border-color: var(--color-primary);
   box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);
 }
 
@@ -240,7 +242,7 @@ function shareUrl() {
   align-items: center;
   gap: 8px;
   padding: 10px 15px;
-  background-color: #2a9d8f;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 30px;
@@ -251,14 +253,14 @@ function shareUrl() {
 }
 
 .share-button:hover {
-  background-color: #238b7e;
+  background-color: var(--color-primary-dark);
   box-shadow: 0 3px 6px rgba(42, 157, 143, 0.4);
 }
 
 .share-notification {
   margin-top: 8px;
   padding: 6px 12px;
-  background-color: #333;
+  background-color: var(--color-text);
   color: white;
   border-radius: 4px;
   font-size: 0.85rem;

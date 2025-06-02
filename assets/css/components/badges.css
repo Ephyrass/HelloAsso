@@ -1,0 +1,11 @@
+.category-badge {
+  display: inline-block;
+  background-color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 500;
+  border-radius: var(--border-radius-lg);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-sm);
+}
+

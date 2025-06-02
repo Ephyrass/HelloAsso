@@ -12,6 +12,14 @@
   </div>
 </template>
 
+<script setup>
+import '~/assets/css/variables.css';
+import '~/assets/css/utilities.css';
+import '~/assets/css/components/event-cards.css';
+import '~/assets/css/components/badges.css';
+
+</script>
+
 <style>
 /* Reset */
 * {
@@ -22,16 +30,16 @@
 }
 
 body {
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: var(--color-light);
+  color: var(--color-text);
   line-height: 1.6;
 }
 
 /* Navbar */
 .navbar {
-  background-color: #2a9d8f;
+  background-color: var(--color-primary);
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   position: fixed;
   top: 0;
   left: 0;
@@ -55,12 +63,12 @@ body {
 }
 
 a {
-  color: #2a9d8f;
+  color: var(--color-primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #1e7a70;
+  color: var(--color-primary-dark);
 }
 </style>
