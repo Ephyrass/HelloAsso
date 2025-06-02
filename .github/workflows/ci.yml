@@ -1,97 +1,98 @@
-name: CI/CD Pipeline
 
-on:
-  push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
+ name: CI/CD Pipeline
 
-# Permissions nécessaires pour GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+ on:
+   push:
+     branches: [ master, main ]
+   pull_request:
+     branches: [ master, main ]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+ # Permissions nécessaires pour GitHub Pages
+ permissions:
+   contents: read
+   pages: write
+   id-token: write
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
+ jobs:
+   test:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm ci
+       - name: Setup Node.js
+         uses: actions/setup-node@v4
+         with:
+           node-version: '18'
+           cache: 'npm'
 
-      - name: Lint
-        run: npm run lint || echo "Lint check skipped"
+       - name: Install dependencies
+         run: npm ci
 
-      - name: Run tests with coverage
-        run: npm run test:coverage
+       - name: Lint
+         run: npm run lint || echo "Lint check skipped"
 
-      - name: Check coverage threshold
-        run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
-            echo "Test coverage is below 60%: $COVERAGE%"
-            exit 1
-          else
-            echo "Test coverage is $COVERAGE%"
-          fi
+       - name: Run tests with coverage
+         run: npm run test:coverage
 
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage/
+       - name: Check coverage threshold
+         run: |
+           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+           if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+             echo "Test coverage is below 60%: $COVERAGE%"
+             exit 1
+           else
+             echo "Test coverage is $COVERAGE%"
+           fi
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+       - name: Upload coverage reports
+         uses: actions/upload-artifact@v4
+         with:
+           name: coverage-report
+           path: coverage/
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
+   build:
+     needs: test
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm ci
+       - name: Setup Node.js
+         uses: actions/setup-node@v3
+         with:
+           node-version: '18'
+           cache: 'npm'
 
-      - name: Build
-        run: npm run build
+       - name: Install dependencies
+         run: npm ci
 
-      # Configuration spécifique pour GitHub Pages
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
+       - name: Build
+         run: npm run build
 
-      # Préparation de l'artefact pour GitHub Pages
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: .output/public
+       # Configuration spécifique pour GitHub Pages
+       - name: Setup Pages
+         uses: actions/configure-pages@v3
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Download coverage reports
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-report
-          path: coverage/
+       # Préparation de l'artefact pour GitHub Pages
+       - name: Upload Pages artifact
+         uses: actions/upload-pages-artifact@v2
+         with:
+           path: .output/public
 
-      # Déploiement sur GitHub Pages
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+   deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+     environment:
+       name: github-pages
+       url: ${{ steps.deployment.outputs.page_url }}
+     steps:
+       - name: Download coverage reports
+         uses: actions/download-artifact@v3
+         with:
+           name: coverage-report
+           path: coverage/
+
+       # Déploiement sur GitHub Pages
+       - name: Deploy to GitHub Pages
+         id: deployment
+         uses: actions/deploy-pages@v2
