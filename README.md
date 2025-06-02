@@ -41,6 +41,7 @@ Affichez une page index correspondant au wireframe fourni
 - [ ] **Notifications** - Alertes pour les nouveaux événements à proximité
 - [ ] **Pagination** - Pagination pour la liste des événements
 - [ ] **Amélioration de l'accessibilité** - Navigation complète au clavier et compatibilité avec les lecteurs d'écran
+- [ ] **Tests supplémentaires** - Ajout de tests d'intégration et de bout en bout pour couvrir les fonctionnalités critiques
 
 
 Vous pouvez utiliser une librairie pour le CSS, à votre convenance.
@@ -81,4 +82,5 @@ Codez bien, et have fun !
 - **Code maintenable** - Structure claire et commentaires pertinents
 - **Principes SOLID** - Application des principes de responsabilité unique et d'ouverture/fermeture
 
-Cette architecture a été conçue pour être à la fois robuste et évolutive, permettant d'ajouter facilement de nouvelles fonctionnalités tout en maintenant une base de code propre et organisée.
+### CI/CD
+- **Intégration continue** - Mise en place de tests automatisés avec Vitest pour garantir la qualité du code
