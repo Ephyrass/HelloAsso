@@ -29,6 +29,7 @@ Affichez une page index correspondant au wireframe fourni
 
 ## Améliorations potentielles
 
+- [ ] **Design System / Tailwind CSS** - Mise en place d'un design system cohérent ou utilisation de Tailwind CSS pour une meilleure maintenabilité et cohérence visuelle
 - [ ] **Traduction** - Ajouter la traduction automatique avec i18n
 - [ ] **Mode sombre** - Implémentation d'un thème sombre avec bouton de basculement dans la navbar
 - [ ] **Clustering de marqueurs** - Regroupement des marqueurs proches sur la carte pour améliorer la lisibilité

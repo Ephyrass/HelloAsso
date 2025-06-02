@@ -1,20 +1,20 @@
 import { vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 
-// Configuration de l'environnement
+// Environment configuration
 export function setupTestEnvironment() {
   if (!globalThis.process) globalThis.process = {} as any
   if (!globalThis.process.env) globalThis.process.env = {} as any
   globalThis.process.env.NODE_ENV = 'test'
 
-  // Configurer Pinia
+  // Configure Pinia
   setActivePinia(createPinia())
 
-  // Simuler l'environnement navigateur
+  // Simulate browser environment
   vi.stubGlobal('process', { client: true })
 }
 
-// Données de test réutilisables
+// Reusable test data
 export const mockEvents = [
   {
     id: 1,
@@ -32,7 +32,7 @@ export const mockEvents = [
   },
 ]
 
-// Mock de Leaflet
+// Leaflet mock
 export function setupLeafletMocks() {
   vi.mock('leaflet', () => {
     const mockMap = {
