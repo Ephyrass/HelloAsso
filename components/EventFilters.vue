@@ -134,13 +134,13 @@ function capitalizeFirstLetter(string: string) {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 20px;
   display: flex;
-  flex-direction: column;
   gap: 20px;
 }
 
 .filter-section {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 10px;
 }
 
@@ -231,6 +231,7 @@ function capitalizeFirstLetter(string: string) {
 @media (max-width: 768px) {
   .filters-container {
     padding: 15px;
+    flex-direction: column;
   }
 
   .category-chip {

@@ -5,8 +5,26 @@
       <p class="subtitle">Filtrez par catégorie ou recherchez un événement spécifique</p>
     </div>
 
+    <div class="mobile-tabs">
+      <button 
+        :class="['tab-btn', { active: activeTab === 'list' }]" 
+        @click="activeTab = 'list'"
+      >
+        Liste d'événements
+      </button>
+      <button 
+        :class="['tab-btn', { active: activeTab === 'map' }]" 
+        @click="activeTab = 'map'"
+      >
+        Carte
+      </button>
+    </div>
+
     <div class="events-layout">
-      <div class="events-list-container">
+      <div 
+        class="events-list-container"
+        :class="{ 'mobile-hidden': activeTab === 'map' }"
+      >
         <h2 class="section-title">Événements</h2>
         <EventList />
       </div>
@@ -16,7 +34,10 @@
           <EventFilters />
         </div>
 
-        <div class="events-map-container">
+        <div 
+          class="events-map-container"
+          :class="{ 'mobile-hidden': activeTab === 'list' }"
+        >
           <EventMap />
         </div>
       </div>
@@ -25,10 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useEventStore } from '~/stores/eventStore'
 
 const eventStore = useEventStore()
+const activeTab = ref('list') // Par défaut, afficher la liste sur mobile
 
 onMounted(() => {
   eventStore.fetchEvents()
@@ -127,6 +149,35 @@ onMounted(() => {
   background: #264653;
 }
 
+/* Styles pour la bascule sur mobile */
+.mobile-tabs {
+  display: none;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn {
+  width: 50%;
+  padding: 12px;
+  background: #f5f5f5;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #264653;
+}
+
+.tab-btn.active {
+  background: #2a9d8f;
+  color: white;
+}
+
+.mobile-hidden {
+  display: none !important;
+}
+
 /* Responsive styles */
 @media (max-width: 1200px) {
   .events-page {
@@ -139,24 +190,28 @@ onMounted(() => {
 }
 
 @media (max-width: 1024px) {
+  .mobile-tabs {
+    display: flex;
+  }
+  
   .events-layout {
     flex-direction: column;
   }
 
-  .events-list-container {
-    width: 100%;
-    height: 300px;
-  }
-
+  .events-list-container,
   .events-map-container {
-    height: 400px;
+    width: 100%;
+    height: calc(100vh - 300px);
   }
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    padding-top: 50px;
+  }
   .page-header h1 {
     font-size: 1.6rem;
-  }
+margin-bottom: 5px; }
 
   .subtitle {
     font-size: 1rem;
@@ -171,19 +226,14 @@ onMounted(() => {
     padding: 10px;
   }
 
-  .events-list-container {
-    height: 250px;
-  }
-
+  .events-list-container,
   .events-map-container {
-    height: 350px;
+    height: calc(100vh - 270px);
   }
 }
 
 @media (max-width: 480px) {
-  .page-header {
-    padding: 10px 0;
-  }
+
 
   .page-header h1 {
     font-size: 1.4rem;
@@ -195,12 +245,12 @@ onMounted(() => {
   }
 
   .events-list-container {
-    height: 200px;
+    height: 300px;
     padding: 10px;
   }
 
   .events-map-container {
-    height: 300px;
+    height: calc(100vh - 250px);
   }
 }
 </style>
