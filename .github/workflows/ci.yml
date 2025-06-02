@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ master, main ]
 
+# Ajout des permissions nécessaires
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -71,7 +77,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    # Configuration de l'environnement GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
       - name: Download coverage reports
         uses: actions/download-artifact@v3
         with:
@@ -84,14 +99,8 @@ jobs:
           name: build-output
           path: .output/
 
-      # Exemple de déploiement sur Netlify
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
         with:
-          publish-dir: '.output/public'
-          production-branch: master
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        # Décommentez si vous utilisez Netlify
-        # if: ${{ false }}
+          artifact_name: build-output
