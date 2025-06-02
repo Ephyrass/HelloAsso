@@ -20,11 +20,11 @@ let markers: Record<string | number, Marker> = {}
 
 function isValidCoords(coords: { lat: number; lng: number } | null) {
   return (
-      coords &&
-      coords.lat !== undefined &&
-      coords.lng !== undefined &&
-      !isNaN(coords.lat) &&
-      !isNaN(coords.lng)
+    coords &&
+    coords.lat !== undefined &&
+    coords.lng !== undefined &&
+    !isNaN(coords.lat) &&
+    !isNaN(coords.lng)
   )
 }
 
@@ -53,7 +53,7 @@ function createHighlightedIcon(L: any) {
 }
 
 // Add markers for events
-function addEventMarkers(L: any ) {
+function addEventMarkers(L: any) {
   if (!map) return
 
   // Remove existing markers

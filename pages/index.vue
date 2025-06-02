@@ -6,22 +6,16 @@
     </div>
 
     <div class="mobile-tabs">
-      <button 
-        :class="['tab-btn', { active: activeTab === 'list' }]" 
-        @click="activeTab = 'list'"
-      >
+      <button :class="['tab-btn', { active: activeTab === 'list' }]" @click="activeTab = 'list'">
         Liste d'événements
       </button>
-      <button 
-        :class="['tab-btn', { active: activeTab === 'map' }]" 
-        @click="activeTab = 'map'"
-      >
+      <button :class="['tab-btn', { active: activeTab === 'map' }]" @click="activeTab = 'map'">
         Carte
       </button>
     </div>
 
     <div class="events-layout">
-      <div 
+      <div
         class="events-list-container"
         :class="{ 'mobile-hidden': isMobile && activeTab === 'map' }"
       >
@@ -34,7 +28,7 @@
           <EventFilters />
         </div>
 
-        <div 
+        <div
           class="events-map-container"
           :class="{ 'mobile-hidden': isMobile && activeTab === 'list' }"
         >
@@ -59,9 +53,9 @@ function checkIsMobile() {
 
 onMounted(() => {
   eventStore.fetchEvents()
-  
+
   checkIsMobile()
-  
+
   window.addEventListener('resize', checkIsMobile)
 })
 
@@ -301,7 +295,7 @@ onBeforeUnmount(() => {
 
 /* Style normal pour les deux conteneurs, sans le toggle sur grand écran */
 @media (min-width: 1025px) {
-  .events-list-container, 
+  .events-list-container,
   .events-map-container {
     display: block !important; /* Force l'affichage sur grand écran */
   }

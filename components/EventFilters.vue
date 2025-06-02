@@ -4,20 +4,7 @@
       <h3 class="filter-title">Recherche</h3>
       <div class="search-container">
         <div class="search-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+          <SearchIcon />
         </div>
         <input
           type="text"
@@ -27,20 +14,7 @@
           class="search-input"
         />
         <button v-if="searchInput" @click="clearSearch" class="clear-btn">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+          <CloseIcon />
         </button>
       </div>
     </div>
@@ -58,10 +32,22 @@
         </div>
       </div>
     </div>
+
+    <div class="filter-section share-section">
+      <h3 class="filter-title">Partager</h3>
+      <button class="share-button" @click="shareUrl">
+        <ShareIcon />
+        Copier le lien
+      </button>
+      <div v-if="isUrlCopied" class="share-notification">URL copiée!</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import SearchIcon from '~/assets/icons/SearchIcon.vue'
+import CloseIcon from '~/assets/icons/CloseIcon.vue'
+import ShareIcon from '~/assets/icons/ShareIcon.vue'
 import { ref, watch, onMounted } from 'vue'
 import { useEventStore } from '~/stores/eventStore'
 
@@ -69,6 +55,7 @@ const eventStore = useEventStore()
 
 const searchInput = ref(eventStore.searchQuery || '')
 const selectedCategoriesInput = ref<string[]>([...(eventStore.selectedCategories ?? [])])
+const isUrlCopied = ref(false)
 
 // Initialize on mount
 onMounted(() => {
@@ -123,6 +110,21 @@ function toggleCategory(category: string) {
 
 function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+function shareUrl() {
+  try {
+    const currentUrl = window.location.href
+    navigator.clipboard.writeText(currentUrl)
+
+    isUrlCopied.value = true
+
+    setTimeout(() => {
+      isUrlCopied.value = false
+    }, 3000)
+  } catch (error) {
+    console.error("Erreur lors de la copie de l'URL:", error)
+  }
 }
 </script>
 
@@ -228,6 +230,62 @@ function capitalizeFirstLetter(string: string) {
   box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);
 }
 
+.share-section {
+  flex: 0 0 auto;
+  min-width: 150px;
+}
+
+.share-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);
+}
+
+.share-button:hover {
+  background-color: #238b7e;
+  box-shadow: 0 3px 6px rgba(42, 157, 143, 0.4);
+}
+
+.share-notification {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+  animation:
+    fadeIn 0.3s,
+    fadeOut 0.3s 2.7s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .filters-container {
     padding: 15px;
@@ -237,6 +295,11 @@ function capitalizeFirstLetter(string: string) {
   .category-chip {
     padding: 6px 12px;
     font-size: 0.85rem;
+  }
+
+  .share-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
