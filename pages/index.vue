@@ -104,7 +104,6 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 25px;
   flex: 1;
-  overflow: hidden;
 }
 
 .events-list-container {
@@ -199,6 +198,7 @@ onBeforeUnmount(() => {
 @media (max-width: 1024px) {
   .events-layout {
     flex-direction: column;
+    overflow: hidden;
   }
 
   .events-list-container {
