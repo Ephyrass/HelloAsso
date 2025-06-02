@@ -230,6 +230,9 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    padding-top: 60px;
+  }
   .page-header h1 {
     font-size: 1.6rem;
   }
