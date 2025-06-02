@@ -1,149 +1,112 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
-import { useEventStore } from '~/stores/eventStore'
-import type { Event } from '~/types/Event'
-
-
-// Since we don't have access to the EventList component, we'll simulate it
-vi.mock('~/components/EventList.vue', () => ({
-  default: {
-    name: 'EventList',
-    template: `
-      <div class="event-list">
-        <div v-if="store.loading" class="loading">Loading...</div>
-        <div v-else-if="store.filteredEvents.length === 0" class="no-events">No events found</div>
-        <div v-else class="events-container">
-          <div 
-            v-for="event in store.filteredEvents" 
-            :key="event.id" 
-            class="event-item"
-            :class="{ 'selected': store.selectedEvent?.id === event.id }"
-            @click="selectEvent(event)"
-          >
-            <h3>{{ event.title }}</h3>
-            <p>{{ event.description }}</p>
-            <span class="event-category">{{ event.category }}</span>
-          </div>
-        </div>
-      </div>
-    `,
-    setup() {
-      const store = useEventStore()
-
-      function selectEvent(event: Event): void {
-        store.selectEvent(event)
-      }
-
-      return { store, selectEvent }
-    },
-  },
-}))
-
-// Mock Vue router
-vi.mock('vue-router', () => ({
-  useRoute: vi.fn(() => ({ query: {} })),
-  useRouter: vi.fn(() => ({ replace: vi.fn() })),
-}))
-
-// Import after the mock
 import EventList from '~/components/EventList.vue'
+import { useEventStore } from '~/stores/eventStore'
+import { setupTestEnvironment, mockEvents } from '~/tests/utils/SetupTest'
+
+// Event store mock
+vi.mock('~/stores/eventStore', () => ({
+  useEventStore: vi.fn(() => ({
+    loading: false,
+    filteredEvents: mockEvents,
+    selectedEvent: null,
+    selectEvent: vi.fn(),
+  })),
+}))
 
 describe('EventList', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
-
-    // Prepare the store with test data
-    const store = useEventStore()
-    store.events = [
-      {
-        id: 1,
-        title: 'Concert Jazz',
-        description: 'A jazz concert',
-        category: 'musique',
-        coords: { lat: 48.8566, lng: 2.3522 },
-      },
-      {
-        id: 2,
-        title: "Exposition d'art",
-        description: 'An art exhibition',
-        category: 'culture',
-        coords: { lat: 48.85, lng: 2.35 },
-      },
-      {
-        id: 3,
-        title: 'Marathon',
-        description: 'Annual race',
-        category: 'sport',
-        coords: { lat: 48.86, lng: 2.36 },
-      },
-    ] as Event[]
-    store.loading = false
+    setupTestEnvironment()
+    vi.clearAllMocks()
   })
 
-  it('displays a loading message when data is being loaded', async () => {
-    const store = useEventStore()
-    store.loading = true
+  it('displays a loading message when loading is true', async () => {
+    // Modify the mock to simulate loading
+    vi.mocked(useEventStore).mockReturnValueOnce({
+      ...useEventStore(),
+      loading: true,
+    })
 
     const wrapper = mount(EventList)
+
     expect(wrapper.find('.loading').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Loading...')
+    expect(wrapper.find('.loading').text()).toContain('Chargement des événements...')
+    expect(wrapper.find('.event-item').exists()).toBe(false)
   })
 
-  it('displays all events when no filter is applied', async () => {
-    const wrapper = mount(EventList)
-
-    const eventItems = wrapper.findAll('.event-item')
-    expect(eventItems.length).toBe(3)
-    expect(eventItems[0].text()).toContain('Concert Jazz')
-    expect(eventItems[1].text()).toContain("Exposition d'art")
-    expect(eventItems[2].text()).toContain('Marathon')
-  })
-
-  it('filters events by category', async () => {
-    const store = useEventStore()
-    store.selectedCategories = ['culture']
+  it('displays a message when no events are found', async () => {
+    // Modify the mock to simulate an empty list
+    vi.mocked(useEventStore).mockReturnValueOnce({
+      ...useEventStore(),
+      filteredEvents: [],
+    })
 
     const wrapper = mount(EventList)
-    await flushPromises()
-
-    const eventItems = wrapper.findAll('.event-item')
-    expect(eventItems.length).toBe(1)
-    expect(eventItems[0].text()).toContain("Exposition d'art")
-  })
-
-  it('filters events by search query', async () => {
-    const store = useEventStore()
-    store.searchQuery = 'jazz'
-
-    const wrapper = mount(EventList)
-    await flushPromises()
-
-    const eventItems = wrapper.findAll('.event-item')
-    expect(eventItems.length).toBe(1)
-    expect(eventItems[0].text()).toContain('Concert Jazz')
-  })
-
-  it('selects an event on click', async () => {
-    const store = useEventStore()
-    const wrapper = mount(EventList)
-
-    const eventItems = wrapper.findAll('.event-item')
-    await eventItems[1].trigger('click')
-
-    expect(store.selectedEvent).toBeTruthy()
-    expect(store.selectedEvent?.id).toBe(2)
-    expect(store.selectedEvent?.title).toBe("Exposition d'art")
-  })
-
-  it('displays a message when no events match the filters', async () => {
-    const store = useEventStore()
-    store.searchQuery = 'no results'
-
-    const wrapper = mount(EventList)
-    await flushPromises()
 
     expect(wrapper.find('.no-events').exists()).toBe(true)
-    expect(wrapper.text()).toContain('No events found')
+    expect(wrapper.find('.no-events').text()).toContain('Aucun événement trouvé')
+    expect(wrapper.find('.event-item').exists()).toBe(false)
+  })
+
+  it('displays the list of events', async () => {
+    const wrapper = mount(EventList)
+
+    const eventItems = wrapper.findAll('.event-item')
+    expect(eventItems.length).toBe(2)
+
+    expect(eventItems[0].find('h3').text()).toBe('Test Event 1')
+    expect(eventItems[0].find('.category-badge').text()).toBe('Category 1')
+    expect(eventItems[0].find('p').text()).toBe('Test description 1')
+
+    expect(eventItems[1].find('h3').text()).toBe('Test Event 2')
+    expect(eventItems[1].find('.category-badge').text()).toBe('Category 2')
+    expect(eventItems[1].find('p').text()).toBe('Test description 2')
+  })
+
+  it('calls selectEvent when clicking on an event', async () => {
+    const mockSelectEvent = vi.fn()
+    vi.mocked(useEventStore).mockReturnValueOnce({
+      ...useEventStore(),
+      selectEvent: mockSelectEvent,
+    })
+
+    const wrapper = mount(EventList)
+
+    await wrapper.findAll('.event-item')[0].trigger('click')
+    expect(mockSelectEvent).toHaveBeenCalledWith(mockEvents[0])
+
+    await wrapper.findAll('.event-item')[1].trigger('click')
+    expect(mockSelectEvent).toHaveBeenCalledWith(mockEvents[1])
+  })
+
+  it('applies the "selected" class to the selected event', async () => {
+    vi.mocked(useEventStore).mockReturnValueOnce({
+      ...useEventStore(),
+      selectedEvent: mockEvents[0],
+    })
+
+    const wrapper = mount(EventList)
+
+    const eventItems = wrapper.findAll('.event-item')
+    expect(eventItems[0].classes()).toContain('selected')
+    expect(eventItems[1].classes()).not.toContain('selected')
+  })
+
+  it('calls scrollIntoView when an event is selected', async () => {
+    // Create a mock for scrollIntoView
+    const scrollIntoViewMock = vi.fn()
+    Element.prototype.scrollIntoView = scrollIntoViewMock
+
+    // Simulate a selected event
+    const selectedEvent = mockEvents[0]
+    vi.mocked(useEventStore).mockReturnValue({
+      ...useEventStore(),
+      selectedEvent,
+    })
+
+    mount(EventList)
+    await flushPromises()
+
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' })
   })
 })

@@ -1,136 +1,75 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import EventMap from '~/components/EventMap.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useEventStore } from '~/stores/eventStore'
 
-import type { Event } from '~/types/Event'
+import { setupTestEnvironment, setupLeafletMocks, mockEvents } from '~/tests/utils/SetupTest'
 
+setupLeafletMocks()
 
-
-// Mock EventMap component
-vi.mock('~/components/EventMap.vue', () => ({
-  default: {
-    name: 'EventMap',
-    props: {
-      events: {
-        type: Array,
-        default: () => [],
-      },
-    },
-    template: `
-      <div class="event-map-mock">
-        <div class="map-container"></div>
-        <div class="map-markers">
-          <div v-for="event in events" :key="event.id" class="map-marker" :data-id="event.id">
-            {{ event.title }}
-          </div>
-        </div>
-      </div>
-    `,
-  },
+vi.mock('~/stores/eventStore', () => ({
+  useEventStore: vi.fn(() => ({
+    loading: false,
+    filteredEvents: mockEvents,
+    selectedEvent: null,
+    selectEvent: vi.fn(),
+  })),
 }))
-
-// Mock Vue router
-vi.mock('vue-router', () => ({
-  useRoute: vi.fn(() => ({ query: {} })),
-  useRouter: vi.fn(() => ({ replace: vi.fn() })),
-}))
-
-// Import after the mock
-import EventMap from '~/components/EventMap.vue'
 
 describe('EventMap', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
-
-    // Prepare the store with test data
-    const store = useEventStore()
-    store.events = [
-      {
-        id: 1,
-        title: 'Concert Jazz',
-        description: 'A jazz concert',
-        category: 'musique',
-        coords: { lat: 48.8566, lng: 2.3522 },
-      },
-      {
-        id: 2,
-        title: "Exposition d'art",
-        description: 'An art exhibition',
-        category: 'culture',
-        coords: { lat: 48.85, lng: 2.35 },
-      },
-      {
-        id: 3,
-        title: 'Marathon',
-        description: 'Annual race',
-        category: 'sport',
-        coords: { lat: 48.86, lng: 2.36 },
-      },
-    ] as Event[]
-    store.loading = false
+    setupTestEnvironment()
   })
 
-  it('renders the map correctly', () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('displays a loading message when events are loading', async () => {
+    // Modify the mock to simulate loading
+    vi.mocked(useEventStore).mockReturnValueOnce({
+      ...useEventStore(),
+      loading: true,
+    })
+
     const wrapper = mount(EventMap)
-    expect(wrapper.find('.event-map-mock').exists()).toBe(true)
-    expect(wrapper.find('.map-container').exists()).toBe(true)
+    expect(wrapper.find('.loading-overlay').exists()).toBe(true)
+    expect(wrapper.find('.loading-overlay').text()).toContain('Chargement de la carte...')
   })
 
-  it('displays markers for all events when no filter is applied', async () => {
-    const store = useEventStore()
-    const wrapper = mount(EventMap, {
-      props: {
-        events: store.filteredEvents as Event[],
-      },
-    })
-
+  it('initializes the Leaflet map on component mount', async () => {
+    const wrapper = mount(EventMap)
     await flushPromises()
 
-    const markers = wrapper.findAll('.map-marker')
-    expect(markers.length).toBe(3)
-    expect(markers[0].text()).toContain('Concert Jazz')
-    expect(markers[1].text()).toContain("Exposition d'art")
-    expect(markers[2].text()).toContain('Marathon')
+    const L = (await import('leaflet')).default
+    expect(L.map).toHaveBeenCalled()
+    expect(L.tileLayer).toHaveBeenCalledWith('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
   })
 
-  it('updates markers when filters change', async () => {
-    const store = useEventStore()
-    const wrapper = mount(EventMap, {
-      props: {
-        events: store.filteredEvents as Event[],
-      },
-    })
-
-    // Apply a category filter
-    store.selectedCategories = ['sport']
+  it('creates markers for each event with valid coordinates', async () => {
+    const wrapper = mount(EventMap)
     await flushPromises()
 
-    // Update props
-    await wrapper.setProps({ events: store.filteredEvents as Event[] })
+    const L = (await import('leaflet')).default
 
-    const markers = wrapper.findAll('.map-marker')
-    expect(markers.length).toBe(1)
-    expect(markers[0].text()).toContain('Marathon')
+    // Check that marker was called for each event
+    expect(L.marker).toHaveBeenCalledTimes(2)
+
+    // Check the coordinates used
+    expect(L.marker).toHaveBeenCalledWith([48.8566, 2.3522], expect.any(Object))
+    expect(L.marker).toHaveBeenCalledWith([45.764, 4.8357], expect.any(Object))
   })
 
-  it('updates markers when performing a search', async () => {
-    const store = useEventStore()
-    const wrapper = mount(EventMap, {
-      props: {
-        events: store.filteredEvents as Event[],
-      },
-    })
-
-    // Apply a search filter
-    store.searchQuery = 'jazz'
+  it('cleans up the map when the component is unmounted', async () => {
+    const wrapper = mount(EventMap)
     await flushPromises()
 
-    // Update props
-    await wrapper.setProps({ events: store.filteredEvents as Event[] })
+    wrapper.unmount()
+    const L = (await import('leaflet')).default
 
-    const markers = wrapper.findAll('.map-marker')
-    expect(markers.length).toBe(1)
-    expect(markers[0].text()).toContain('Concert Jazz')
+    // Check that the remove method was called on the map
+    expect(L.map().remove).toHaveBeenCalled()
   })
 })
+

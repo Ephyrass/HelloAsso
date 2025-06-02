@@ -129,49 +129,4 @@ watch(
   width: 30px;
   height: 30px;
 }
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .event-item {
-    padding: 10px;
-    margin-bottom: 8px;
-  }
-  .event-item h3 {
-    font-size: 1rem;
-  }
-  .event-item p {
-    font-size: 0.9rem;
-  }
-  .category-badge {
-    font-size: 0.75rem;
-    padding: 3px 8px;
-  }
-  .loading,
-  .no-events {
-    padding: 18px;
-    font-size: 0.95rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .event-item {
-    padding: 8px;
-    margin-bottom: 6px;
-  }
-  .event-item h3 {
-    font-size: 0.95rem;
-  }
-  .event-item p {
-    font-size: 0.85rem;
-  }
-  .category-badge {
-    font-size: 0.7rem;
-    padding: 2px 6px;
-  }
-  .loading,
-  .no-events {
-    padding: 12px;
-    font-size: 0.9rem;
-  }
-}
 </style>
