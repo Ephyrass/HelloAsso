@@ -72,7 +72,7 @@ function addEventMarkers(L: any) {
       const markerOptions = isSelected ? { icon: createHighlightedIcon(L) } : {}
 
       const marker = L.marker([event.coords.lat, event.coords.lng], markerOptions).addTo(map)
-          .bindPopup(`<strong>${event.title}</strong><br>
+        .bindPopup(`<strong>${event.title}</strong><br>
                 <span class="category">${event.category}</span><br>
                 <p class="description">${event.description}</p>`)
 

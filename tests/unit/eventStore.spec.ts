@@ -7,11 +7,11 @@ import type { Event } from '~/types/Event'
 // Mock for Vue Router
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => ({
-    query: {}
+    query: {},
   })),
   useRouter: vi.fn(() => ({
-    replace: vi.fn()
-  }))
+    replace: vi.fn(),
+  })),
 }))
 
 // Mock for fetch
@@ -37,14 +37,26 @@ describe('eventStore', () => {
 
   it('should fetch events from the API', async () => {
     const mockEvents = [
-      { id: 1, title: 'Event 1', description: 'Desc 1', category: 'Cat A', coords: { lat: 10, lng: 20 } },
-      { id: 2, title: 'Event 2', description: 'Desc 2', category: 'Cat B', coords: { lat: 30, lng: 40 } }
+      {
+        id: 1,
+        title: 'Event 1',
+        description: 'Desc 1',
+        category: 'Cat A',
+        coords: { lat: 10, lng: 20 },
+      },
+      {
+        id: 2,
+        title: 'Event 2',
+        description: 'Desc 2',
+        category: 'Cat B',
+        coords: { lat: 30, lng: 40 },
+      },
     ]
 
     // Fix typing for the mock
     const fetchMock = global.fetch as unknown as ReturnType<typeof vi.fn>
     fetchMock.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockEvents)
+      json: () => Promise.resolve(mockEvents),
     })
 
     await store.fetchEvents()
@@ -57,8 +69,20 @@ describe('eventStore', () => {
 
   it('should filter events by search', () => {
     store.events = [
-      { id: 1, title: 'Conference', description: 'Tech conference', category: 'Tech', coords: { lat: 10, lng: 20 } },
-      { id: 2, title: 'Concert', description: 'Music event', category: 'Music', coords: { lat: 30, lng: 40 } }
+      {
+        id: 1,
+        title: 'Conference',
+        description: 'Tech conference',
+        category: 'Tech',
+        coords: { lat: 10, lng: 20 },
+      },
+      {
+        id: 2,
+        title: 'Concert',
+        description: 'Music event',
+        category: 'Music',
+        coords: { lat: 30, lng: 40 },
+      },
     ] as Event[]
 
     expect(store.filteredEvents.length).toBe(2)
@@ -73,8 +97,20 @@ describe('eventStore', () => {
 
   it('should filter events by category', () => {
     store.events = [
-      { id: 1, title: 'Conference', description: 'Tech conference', category: 'Tech', coords: { lat: 10, lng: 20 } },
-      { id: 2, title: 'Concert', description: 'Music event', category: 'Music', coords: { lat: 30, lng: 40 } }
+      {
+        id: 1,
+        title: 'Conference',
+        description: 'Tech conference',
+        category: 'Tech',
+        coords: { lat: 10, lng: 20 },
+      },
+      {
+        id: 2,
+        title: 'Concert',
+        description: 'Music event',
+        category: 'Music',
+        coords: { lat: 30, lng: 40 },
+      },
     ] as Event[]
 
     expect(store.filteredEvents.length).toBe(2)
@@ -88,7 +124,13 @@ describe('eventStore', () => {
   })
 
   it('should select an event', () => {
-    const event = { id: 1, title: 'Test', description: 'Description', category: 'Cat', coords: { lat: 10, lng: 20 } } as Event
+    const event = {
+      id: 1,
+      title: 'Test',
+      description: 'Description',
+      category: 'Cat',
+      coords: { lat: 10, lng: 20 },
+    } as Event
     store.selectEvent(event)
     expect(store.selectedEvent).toEqual(event)
   })
@@ -101,8 +143,8 @@ describe('eventStore', () => {
     const mockRoute = {
       query: {
         search: 'test',
-        categories: ['Cat A', 'Cat B']
-      }
+        categories: ['Cat A', 'Cat B'],
+      },
     }
     vi.mocked(useRoute).mockReturnValue(mockRoute as any)
 

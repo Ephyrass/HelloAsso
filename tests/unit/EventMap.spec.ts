@@ -68,8 +68,6 @@ describe('EventMap', () => {
     wrapper.unmount()
     const L = (await import('leaflet')).default
 
-    // Check that the remove method was called on the map
-    expect(L.map().remove).toHaveBeenCalled()
+    expect(vi.mocked(L.map).mock.results[0].value.remove).toHaveBeenCalled()
   })
 })
-
