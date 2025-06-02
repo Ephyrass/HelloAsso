@@ -1,98 +1,97 @@
+name: CI/CD Pipeline
 
- name: CI/CD Pipeline
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
 
- on:
-   push:
-     branches: [ master, main ]
-   pull_request:
-     branches: [ master, main ]
+# Permissions nécessaires pour GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
- # Permissions nécessaires pour GitHub Pages
- permissions:
-   contents: read
-   pages: write
-   id-token: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
- jobs:
-   test:
-     runs-on: ubuntu-latest
-     steps:
-       - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-       - name: Setup Node.js
-         uses: actions/setup-node@v3
-         with:
-           node-version: '18'
-           cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
 
-       - name: Install dependencies
-         run: npm ci
+      - name: Lint
+        run: npm run lint || echo "Lint check skipped"
 
-       - name: Lint
-         run: npm run lint || echo "Lint check skipped"
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
-       - name: Run tests with coverage
-         run: npm run test:coverage
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+            echo "Test coverage is below 60%: $COVERAGE%"
+            exit 1
+          else
+            echo "Test coverage is $COVERAGE%"
+          fi
 
-       - name: Check coverage threshold
-         run: |
-           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-           if (( $(echo "$COVERAGE < 60" | bc -l) )); then
-             echo "Test coverage is below 60%: $COVERAGE%"
-             exit 1
-           else
-             echo "Test coverage is $COVERAGE%"
-           fi
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
 
-       - name: Upload coverage reports
-         uses: actions/upload-artifact@v3
-         with:
-           name: coverage-report
-           path: coverage/
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-   build:
-     needs: test
-     runs-on: ubuntu-latest
-     steps:
-       - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-       - name: Setup Node.js
-         uses: actions/setup-node@v3
-         with:
-           node-version: '18'
-           cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
 
-       - name: Install dependencies
-         run: npm ci
+      - name: Build
+        run: npm run build
 
-       - name: Build
-         run: npm run build
+      # Configuration spécifique pour GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
-       # Configuration spécifique pour GitHub Pages
-       - name: Setup Pages
-         uses: actions/configure-pages@v3
+      # Préparation de l'artefact pour GitHub Pages
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: .output/public
 
-       # Préparation de l'artefact pour GitHub Pages
-       - name: Upload Pages artifact
-         uses: actions/upload-pages-artifact@v2
-         with:
-           path: .output/public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download coverage reports
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
 
-   deploy:
-     needs: build
-     runs-on: ubuntu-latest
-     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-     environment:
-       name: github-pages
-       url: ${{ steps.deployment.outputs.page_url }}
-     steps:
-       - name: Download coverage reports
-         uses: actions/download-artifact@v3
-         with:
-           name: coverage-report
-           path: coverage/
-
-       # Déploiement sur GitHub Pages
-       - name: Deploy to GitHub Pages
-         id: deployment
-         uses: actions/deploy-pages@v2
+      # Déploiement sur GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
