@@ -18,14 +18,13 @@ const isEventSelected = ref(false)
 let map: Map | null = null
 let markers: Record<string | number, Marker> = {}
 
-// Fonctions utilitaires pour une meilleure organisation
-function isValidCoords(coords: any): boolean {
+function isValidCoords(coords: { lat: number; lng: number } | null) {
   return (
-    coords &&
-    typeof coords.lat === 'number' &&
-    typeof coords.lng === 'number' &&
-    !isNaN(coords.lat) &&
-    !isNaN(coords.lng)
+      coords &&
+      coords.lat !== undefined &&
+      coords.lng !== undefined &&
+      !isNaN(coords.lat) &&
+      !isNaN(coords.lng)
   )
 }
 
@@ -54,7 +53,7 @@ function createHighlightedIcon(L: any) {
 }
 
 // Add markers for events
-function addEventMarkers(L: any) {
+function addEventMarkers(L: any ) {
   if (!map) return
 
   // Remove existing markers
