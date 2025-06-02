@@ -13,6 +13,8 @@ import { useEventStore } from '~/stores/eventStore'
 const eventStore = useEventStore()
 
 const mapContainer = ref<HTMLElement | null>(null)
+const isEventSelected = ref(false)
+
 let map: Map | null = null
 let markers: Record<string | number, Marker> = {}
 
@@ -70,12 +72,13 @@ function addEventMarkers(L: any) {
       const markerOptions = isSelected ? { icon: createHighlightedIcon(L) } : {}
 
       const marker = L.marker([event.coords.lat, event.coords.lng], markerOptions).addTo(map)
-        .bindPopup(`<strong>${event.title}</strong><br>
+          .bindPopup(`<strong>${event.title}</strong><br>
                 <span class="category">${event.category}</span><br>
                 <p class="description">${event.description}</p>`)
 
       marker.on('click', () => {
         eventStore.selectEvent(event)
+        isEventSelected.value = true
       })
 
       // Immediately open the popup if this event is selected
@@ -91,8 +94,7 @@ function addEventMarkers(L: any) {
     }
   })
 
-  // Adjust map view if markers are present
-  if (markerCount > 0) {
+  if (markerCount > 0 && !isEventSelected.value) {
     map.fitBounds(bounds, { padding: [50, 50] })
   }
 }
